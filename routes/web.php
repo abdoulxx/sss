@@ -332,14 +332,9 @@ Route::middleware(['auth', 'verifier.role'])->group(function () {
     Route::delete('/dashboard/articles/{id}', [App\Http\Controllers\DashboardController::class, 'deleteArticle'])
          ->name('dashboard.articles.delete');
     
-    // === APPROBATION ARTICLES - Seulement directeur et admin ===
-    Route::post('/dashboard/articles/{id}/approve', [App\Http\Controllers\DashboardController::class, 'approveArticle'])
-         ->name('dashboard.articles.approve')
-         ->middleware('verifier.role:admin|directeur_publication');
-    
-    // === REJET ARTICLES - Seulement directeur et admin ===
-    Route::post('/dashboard/articles/{id}/reject', [App\Http\Controllers\DashboardController::class, 'rejectArticle'])
-         ->name('dashboard.articles.reject')
+    // === MODÉRATION ARTICLES - Seulement directeur et admin ===
+    Route::post('/dashboard/articles/{id}/moderate', [App\Http\Controllers\DashboardController::class, 'moderateArticle'])
+         ->name('dashboard.articles.moderate')
          ->middleware('verifier.role:admin|directeur_publication');
     
     // === ACTIONS GROUPÉES SUR ARTICLES - Seulement directeur et admin pour publication ===

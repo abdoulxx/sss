@@ -14,7 +14,7 @@
             padding: 20px;
         }
         .header {
-            background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
             color: white;
             padding: 30px 20px;
             text-align: center;
@@ -37,129 +37,105 @@
             color: #6c757d;
         }
         .article-info {
-            background: #f8f9fa;
+            background: #fff3cd;
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
+            border-left: 4px solid #ffc107;
+        }
+        .reason-box {
+            background: #f8d7da;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #dc3545;
         }
         .btn {
             display: inline-block;
             padding: 12px 24px;
-            background-color: #007bff;
-            color: white;
+            background-color: #ffc107;
+            color: #212529;
             text-decoration: none;
             border-radius: 6px;
             margin: 15px 0;
             font-weight: 600;
         }
         .btn:hover {
-            background-color: #0056b3;
-        }
-        .feedback {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
+            background-color: #e0a800;
         }
         .encouragement {
             background: #d1ecf1;
-            border: 1px solid #bee5eb;
             padding: 20px;
             border-radius: 8px;
             margin: 20px 0;
-            color: #0c5460;
-        }
-        .tips {
-            background: #f8f9fa;
-            padding: 15px;
-            border-left: 4px solid #007bff;
-            margin: 15px 0;
+            border-left: 4px solid #17a2b8;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>📋 Révisions nécessaires</h1>
-        <p>Excellence Afrik - Retour éditorial</p>
+        <h1>📋 Révisions Demandées</h1>
+        <p>Votre article nécessite des modifications</p>
     </div>
-    
+
     <div class="content">
         <h2>Bonjour {{ $author->name }},</h2>
-        
-        <p>Merci pour votre soumission ! Après révision, votre article nécessite quelques ajustements avant publication.</p>
-        
+
+        <p>Nous avons examiné votre article et souhaitons vous aider à l'améliorer avant publication.</p>
+
         <div class="article-info">
             <h3>📄 Article concerné :</h3>
             <p><strong>Titre :</strong> {{ $article->title }}</p>
             <p><strong>Catégorie :</strong> {{ $article->category->name ?? 'Non spécifiée' }}</p>
-            <p><strong>Date de révision :</strong> {{ now()->format('d/m/Y à H:i') }}</p>
+            <p><strong>Date de soumission :</strong> {{ $article->updated_at->format('d/m/Y à H:i') }}</p>
+            @if($article->excerpt)
+                <p><strong>Extrait :</strong> {{ Str::limit($article->excerpt, 200) }}</p>
+            @endif
         </div>
-        
+
         @if($reason)
-            <div class="feedback">
-                <h3>💭 Commentaires éditoriaux :</h3>
+            <div class="reason-box">
+                <h3>📝 Commentaires et suggestions :</h3>
                 <p>{{ $reason }}</p>
             </div>
+        @else
+            <div class="reason-box">
+                <h3>📝 Commentaires :</h3>
+                <p>Des modifications sont nécessaires pour améliorer la qualité de votre article. Veuillez consulter votre tableau de bord pour plus de détails ou contacter l'équipe éditoriale.</p>
+            </div>
         @endif
-        
+
         <div class="encouragement">
             <h3>💪 Ne vous découragez pas !</h3>
-            <p>Votre travail est apprécié et nous voyons le potentiel de cet article. Les révisions font partie du processus éditorial normal et permettent d'améliorer la qualité du contenu.</p>
+            <p>Cette étape fait partie du processus éditorial normal. Nous sommes là pour vous aider à créer le meilleur contenu possible.</p>
         </div>
-        
+
         <div style="text-align: center;">
             <a href="{{ $dashboardUrl }}" class="btn">
-                ✏️ Réviser l'article
+                ✏️ Modifier mon article
             </a>
         </div>
-        
-        <h3>📝 Points à vérifier généralement :</h3>
-        
-        <div class="tips">
-            <h4>✅ Structure et contenu :</h4>
-            <ul>
-                <li>Titre accrocheur et informatif</li>
-                <li>Introduction qui captive le lecteur</li>
-                <li>Développement structuré avec des sous-titres</li>
-                <li>Conclusion qui apporte de la valeur</li>
-            </ul>
-        </div>
-        
-        <div class="tips">
-            <h4>🔍 Style et qualité :</h4>
-            <ul>
-                <li>Orthographe et grammaire</li>
-                <li>Ton adapté à notre audience</li>
-                <li>Sources et références citées</li>
-                <li>Images et médias appropriés</li>
-            </ul>
-        </div>
-        
-        <div class="tips">
-            <h4>🎯 Critères Excellence Afrik :</h4>
-            <ul>
-                <li>Pertinence pour l'écosystème africain</li>
-                <li>Valeur ajoutée pour les lecteurs</li>
-                <li>Originalité et perspective unique</li>
-                <li>Respect de notre ligne éditoriale</li>
-            </ul>
-        </div>
-        
-        <h3>🚀 Prochaines étapes :</h3>
-        <ol>
-            <li>Accédez à votre tableau de bord</li>
-            <li>Apportez les corrections nécessaires</li>
-            <li>Soumettez à nouveau votre article</li>
-            <li>Notre équipe le révisera rapidement</li>
-        </ol>
-        
-        <p><strong>Nous croyons en votre potentiel !</strong> N'hésitez pas à nous contacter si vous avez des questions.</p>
+
+        <h3>🔄 Prochaines étapes :</h3>
+        <ul>
+            <li>📖 Lisez attentivement les commentaires ci-dessus</li>
+            <li>✏️ Apportez les modifications suggérées</li>
+            <li>🔍 Relisez votre article après les modifications</li>
+            <li>📤 Soumettez à nouveau votre article pour validation</li>
+        </ul>
+
+        <p style="margin-top: 30px;">
+            <strong>Besoin d'aide ?</strong> N'hésitez pas à contacter l'équipe éditoriale si vous avez des questions sur les modifications demandées.
+        </p>
+
+        <p>
+            <em>Nous apprécions votre contribution et avons hâte de publier votre article une fois amélioré !</em>
+        </p>
     </div>
-    
+
     <div class="footer">
-        <p><strong>Excellence Afrik</strong> - Plateforme de gestion éditoriale</p>
-        <p>Ensemble, créons du contenu d'exception pour l'Afrique !</p>
+        <p><strong>Excellence Afrik</strong> - Ensemble vers l'excellence</p>
+        <p>Cet email a été envoyé automatiquement. Ne pas répondre à cet email.</p>
     </div>
 </body>
 </html>

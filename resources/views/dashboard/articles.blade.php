@@ -436,16 +436,16 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center">
-                                @if($article->featured_image_path && file_exists(public_path('storage/' . $article->featured_image_path)))
-                                    <img src="{{ asset('storage/' . $article->featured_image_path) }}" 
+                                @if($article->featured_image_path && file_exists(storage_path('app/public/' . $article->featured_image_path)))
+                                    <img src="{{ asset('storage/app/public/' . $article->featured_image_path) }}"
                                          class="rounded me-3 object-fit-cover" width="60" height="40" alt="Article"
                                          style="object-fit: cover;">
                                 @elseif($article->featured_image_url)
-                                    <img src="{{ $article->featured_image_url }}" 
+                                    <img src="{{ $article->featured_image_url }}"
                                          class="rounded me-3 object-fit-cover" width="60" height="40" alt="Article"
                                          style="object-fit: cover;">
                                 @else
-                                    <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" 
+                                    <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center"
                                          style="width: 60px; height: 40px;">
                                         <i class="fas fa-image text-muted"></i>
                                     </div>
@@ -510,16 +510,18 @@
                                 
                                 <!-- Bouton approuver - Seulement Admin et Directeur pour articles en attente -->
                                 @if(auth()->check() && (auth()->user()->estAdmin() || auth()->user()->estDirecteurPublication()) && $article->status === 'pending')
-                                    <form method="POST" action="{{ route('dashboard.articles.approve', $article->id) }}" style="display: inline;" onsubmit="return confirm('Approuver et publier cet article ?')">
+                                    <form method="POST" action="{{ route('dashboard.articles.moderate', $article->id) }}" style="display: inline;" onsubmit="return confirm('Approuver et publier cet article ?')">
                                         @csrf
+                                        <input type="hidden" name="action" value="approve">
                                         <button type="submit" class="btn btn-outline-success" title="Approuver et publier">
                                             <i class="fas fa-check"></i>
                                         </button>
                                     </form>
-                                    
+
                                     <!-- Bouton refuser -->
-                                    <form method="POST" action="{{ route('dashboard.articles.reject', $article->id) }}" style="display: inline;" onsubmit="return confirm('Refuser cet article et le renvoyer en brouillon ?')">
+                                    <form method="POST" action="{{ route('dashboard.articles.moderate', $article->id) }}" style="display: inline;" onsubmit="return confirm('Refuser cet article et le renvoyer en brouillon ?')">
                                         @csrf
+                                        <input type="hidden" name="action" value="reject">
                                         <input type="hidden" name="reason" value="">
                                         <button type="submit" class="btn btn-outline-danger" title="Refuser l'article">
                                             <i class="fas fa-times"></i>

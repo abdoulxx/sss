@@ -287,6 +287,45 @@ class DashboardController extends Controller
     }
 
     /**
+     * Approve or reject an article with optional reason
+     */
+    public function moderateArticle(Request $request, $id)
+    {
+        $utilisateur = Auth::user();
+
+        if (!$utilisateur->peutPublier()) {
+            abort(403, 'Vous n\'avez pas les permissions pour modérer les articles.');
+        }
+
+        $article = Article::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'action' => 'required|in:approve,reject',
+            'reason' => 'nullable|string|max:1000'
+        ]);
+
+        $oldStatus = $article->status;
+
+        if ($validatedData['action'] === 'approve') {
+            $article->update([
+                'status' => 'published',
+                'published_at' => now()
+            ]);
+            $message = 'Article approuvé et publié avec succès !';
+        } else { // reject
+            $article->update(['status' => 'draft']);
+            $message = 'Article rejeté et renvoyé en brouillon.';
+        }
+
+        // Déclencher manuellement l'event avec la raison si fournie
+        if (!empty($validatedData['reason'])) {
+            event(new \App\Events\ArticleStatusChanged($article, $oldStatus, $article->status, $validatedData['reason']));
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
      * Show categories management page.
      */
     public function categories()

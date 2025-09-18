@@ -1057,20 +1057,25 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Vérifier les champs requis
             const title = document.getElementById('title').value.trim();
-            const category = document.getElementById('category').value;
+            const mainCategory = document.getElementById('main_category').value;
+            const subcategory = document.getElementById('subcategory').value;
             const excerpt = document.getElementById('excerpt').value.trim();
             const content = quill.getText().trim();
-            
+
             console.log('Title:', title);
-            console.log('Category:', category);
+            console.log('Main Category:', mainCategory);
+            console.log('Subcategory:', subcategory);
             console.log('Excerpt:', excerpt);
             console.log('Content length:', content.length);
-            
+
             if (!title) {
                 alert('Veuillez saisir un titre');
                 return;
             }
-            if (!category) {
+
+            // Vérifier qu'au moins une catégorie est sélectionnée
+            const categorySelected = mainCategory && (subcategory || !document.getElementById('subcategory-group').style.display || document.getElementById('subcategory-group').style.display === 'none');
+            if (!categorySelected) {
                 alert('Veuillez sélectionner une catégorie');
                 return;
             }

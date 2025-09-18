@@ -793,6 +793,73 @@
             </div>
         </div>
 
+        @if($article->status === 'pending' && auth()->user()->peutPublier())
+        <!-- Section Modération - Seulement pour les articles en attente et les admins/directeurs -->
+        <div class="form-section" style="border-top: 3px solid #f59e0b; background: #fffbf0;">
+            <h2 class="section-title" style="color: #f59e0b;">
+                <i class="fas fa-gavel"></i>
+                Modération de l'Article
+            </h2>
+
+            <div style="background: #fff3cd; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #f59e0b;">
+                <p style="margin: 0; color: #856404;">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Article en attente de validation</strong> - Cet article a été soumis par <strong>{{ $article->user->name }}</strong> et attend votre décision.
+                </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                <!-- Approuver -->
+                <form action="{{ route('dashboard.articles.moderate', $article->id) }}" method="POST" style="margin: 0;">
+                    @csrf
+                    <input type="hidden" name="action" value="approve">
+                    <button type="submit"
+                            onclick="return confirm('Êtes-vous sûr de vouloir approuver et publier cet article ?')"
+                            style="width: 100%; padding: 1rem; background: #28a745; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        <i class="fas fa-check-circle"></i>
+                        Approuver et Publier
+                    </button>
+                </form>
+
+                <!-- Rejeter avec raison -->
+                <div>
+                    <button type="button" id="showRejectForm"
+                            style="width: 100%; padding: 1rem; background: #dc3545; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        <i class="fas fa-times-circle"></i>
+                        Demander des Révisions
+                    </button>
+
+                    <div id="rejectFormContainer" style="display: none; margin-top: 1rem; background: #f8d7da; padding: 1rem; border-radius: 8px; border-left: 4px solid #dc3545;">
+                        <form action="{{ route('dashboard.articles.moderate', $article->id) }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="action" value="reject">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: #721c24;">
+                                Raison du rejet (optionnel) :
+                            </label>
+                            <textarea
+                                name="reason"
+                                rows="3"
+                                placeholder="Expliquez les modifications nécessaires pour aider l'auteur..."
+                                style="width: 100%; padding: 0.5rem; border: 1px solid #dc3545; border-radius: 4px; margin-bottom: 1rem;"></textarea>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="submit"
+                                        onclick="return confirm('Êtes-vous sûr de vouloir rejeter cet article ?')"
+                                        style="flex: 1; padding: 0.5rem 1rem; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Confirmer le Rejet
+                                </button>
+                                <button type="button"
+                                        onclick="document.getElementById('rejectFormContainer').style.display = 'none'"
+                                        style="flex: 1; padding: 0.5rem 1rem; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                    Annuler
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <!-- Actions -->
         <div class="form-actions">
             <div>
@@ -1070,6 +1137,15 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('articleForm').addEventListener('submit', function() {
         document.getElementById('content').value = quill.root.innerHTML;
     });
+
+    // Gestion du formulaire de rejet
+    const showRejectBtn = document.getElementById('showRejectForm');
+    if (showRejectBtn) {
+        showRejectBtn.addEventListener('click', function() {
+            const rejectContainer = document.getElementById('rejectFormContainer');
+            rejectContainer.style.display = rejectContainer.style.display === 'none' ? 'block' : 'none';
+        });
+    }
 
     // Initial progress update
     updateProgress();
