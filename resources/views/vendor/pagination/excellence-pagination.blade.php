@@ -1,12 +1,6 @@
 @if ($paginator->hasPages())
     <nav class="excellence-pagination" aria-label="Navigation des pages">
         <div class="pagination-wrapper d-flex justify-content-center align-items-center">
-            <div class="pagination-info me-4">
-                <span>
-                    Page {{ $paginator->currentPage() }} sur {{ $paginator->lastPage() }}
-                    ({{ $paginator->total() }} {{ $paginator->total() > 1 ? 'articles' : 'article' }})
-                </span>
-            </div>
             
             <ul class="pagination excellence-pagination-list mb-0">
                 {{-- Previous Page Link --}}
@@ -82,16 +76,6 @@
         justify-content: center;
         align-items: center;
         flex-wrap: wrap;
-        gap: 1.5rem;
-    }
-
-    .pagination-info {
-        font-size: 0.875rem; /* 14px */
-        color: #495057;
-        background-color: #f1f3f5;
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
-        font-weight: 500;
     }
 
     .excellence-pagination-list {
@@ -146,8 +130,7 @@
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .pagination-wrapper {
-            flex-direction: column;
-            gap: 1rem;
+            justify-content: center;
         }
     }
     </style>

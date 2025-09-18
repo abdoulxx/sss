@@ -165,9 +165,16 @@ Route::prefix('articles')->name('articles.')->group(function () {
                 ->first();
         }
 
+        // Robust resolution for "Portrait de l'entreprise" page
+        if (!$category && in_array($slug, ['portrait-de-l-entreprise', 'portrait-d-entreprise'])) {
+            $category = \App\Models\Category::whereIn('slug', ['portrait-de-l-entreprise', 'portrait-d-entreprise'])
+                ->where('status', 'active')
+                ->first();
+        }
+
         // Robust resolution for "Portrait de l'entrepreneur" page
-        if (!$category && in_array($slug, ['portrait-de-l-entreprise', 'portrait-de-l-entrepreneur', 'portrait-d-entrepreneur'])) {
-            $category = \App\Models\Category::whereIn('slug', ['portrait-de-l-entreprise', 'portrait-de-l-entrepreneur', 'portrait-d-entrepreneur'])
+        if (!$category && in_array($slug, ['portrait-de-l-entrepreneur', 'portrait-d-entrepreneur', 'portrait-entrepreneur'])) {
+            $category = \App\Models\Category::whereIn('slug', ['portrait-de-l-entrepreneur', 'portrait-d-entrepreneur', 'portrait-entrepreneur'])
                 ->where('status', 'active')
                 ->first();
         }

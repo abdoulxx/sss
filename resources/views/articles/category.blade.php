@@ -257,8 +257,6 @@
 </div>
 
 
-            <!-- DEBUG: Total articles -->
-            <p class="text-center fw-bold">Total des articles trouvés : {{ $articles->total() }}</p>
 
             <!-- Pagination -->
             @if($articles->hasPages())

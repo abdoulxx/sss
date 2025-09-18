@@ -300,6 +300,9 @@ class DashboardController extends Controller
             $validatedData['slug'] = Str::slug($validatedData['name']);
         }
 
+        // Ajouter l'ID de l'utilisateur connecté
+        $validatedData['user_id'] = Auth::id();
+
         \App\Models\Category::create($validatedData);
 
         return redirect()->route('dashboard.categories.index')->with('success', 'Catégorie créée avec succès !');
