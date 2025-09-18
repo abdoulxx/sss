@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Category;
@@ -93,7 +94,7 @@ class DashboardController extends Controller
     /**
      * Show articles management page.
      */
-    public function articles()
+    public function articles(Request $request)
     {
         $utilisateur = Auth::user();
         $articlesQuery = Article::with(['category', 'user']);
@@ -102,10 +103,39 @@ class DashboardController extends Controller
             // Journalists should see all their own articles, regardless of status
             $articlesQuery->where('user_id', $utilisateur->id);
         }
-        // Admins and Directors will now see all articles, including drafts.
 
-        $articles = $articlesQuery->orderBy('created_at', 'desc')->paginate(15); // Paginate with 15 articles per page
-        return view('dashboard.articles', compact('articles'));
+        // Apply search filters
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $articlesQuery->where(function($query) use ($search) {
+                $query->where('title', 'LIKE', '%' . $search . '%')
+                      ->orWhere('excerpt', 'LIKE', '%' . $search . '%')
+                      ->orWhere('content', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        // Filter by category
+        if ($request->has('category') && $request->category) {
+            $articlesQuery->where('category_id', $request->category);
+        }
+
+        // Filter by status
+        if ($request->has('status') && $request->status) {
+            $articlesQuery->where('status', $request->status);
+        }
+
+        // Filter by author
+        if ($request->has('author') && $request->author) {
+            $articlesQuery->where('user_id', $request->author);
+        }
+
+        $articles = $articlesQuery->orderBy('created_at', 'desc')->paginate(15);
+
+        // Get categories and users for filters
+        $categories = Category::where('status', 'active')->where('is_active', 1)->orderBy('name')->get();
+        $users = User::orderBy('name')->get();
+
+        return view('dashboard.articles', compact('articles', 'categories', 'users'));
     }
 
     /**
@@ -182,6 +212,22 @@ class DashboardController extends Controller
         }
 
         return redirect()->route('dashboard.articles')->with('success', 'Article créé avec succès.');
+    }
+
+    /**
+     * Show article details.
+     */
+    public function showArticle($id)
+    {
+        $utilisateur = Auth::user();
+        $article = Article::with(['category', 'user'])->findOrFail($id);
+
+        // Les journalistes ne peuvent voir que leurs propres articles ou les articles publiés
+        if ($utilisateur->estJournaliste() && $article->user_id !== $utilisateur->id && $article->status !== 'published') {
+            abort(403, 'Vous ne pouvez consulter que vos propres articles ou les articles publiés.');
+        }
+
+        return view('dashboard.articles.show', compact('article'));
     }
 
     /**
@@ -491,7 +537,7 @@ class DashboardController extends Controller
 
         $users = User::orderBy('created_at', 'desc')->paginate(15);
 
-        return view('dashboard.users.index', compact('users'));
+        return view('dashboard.users', compact('users'));
     }
 
     /**
@@ -691,5 +737,47 @@ class DashboardController extends Controller
             'success' => true,
             'message' => 'Utilisateur supprimé avec succès'
         ]);
+    }
+
+    /**
+     * Show user profile page.
+     */
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('dashboard.profile', compact('user'));
+    }
+
+    /**
+     * Update user profile.
+     */
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $validatedData = $request->validate([
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'current_password' => 'nullable|string',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        // Vérifier le mot de passe actuel si un nouveau mot de passe est fourni
+        if ($request->filled('password')) {
+            if (!$request->filled('current_password') || !Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'Le mot de passe actuel est incorrect.']);
+            }
+        }
+
+        // Mettre à jour l'email
+        $user->email = $validatedData['email'];
+
+        // Mettre à jour le mot de passe si fourni
+        if ($request->filled('password')) {
+            $user->password = Hash::make($validatedData['password']);
+        }
+
+        $user->save();
+
+        return redirect()->route('dashboard.profile')->with('success', 'Profil mis à jour avec succès.');
     }
 }

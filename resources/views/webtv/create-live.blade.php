@@ -275,9 +275,9 @@
                         <div class="form-field">
                             <label for="statut" class="form-label required">Statut Initial</label>
                             <select id="statut" name="statut" class="form-select @error('statut') error @enderror" required>
-                                <option value="draft" {{ old('statut', 'draft') === 'draft' ? 'selected' : '' }}>Brouillon (non visible)</option>
-                                <option value="programme" {{ old('statut') === 'programme' ? 'selected' : '' }}>Programmé (visible, en attente)</option>
-                                <option value="en_direct" {{ old('statut') === 'en_direct' ? 'selected' : '' }}>En Direct (diffusion active)</option>
+                                <option value="draft" {{ old('statut') === 'draft' ? 'selected' : '' }}>🔒 Brouillon (non visible côté client)</option>
+                                <option value="programme" {{ old('statut', 'programme') === 'programme' ? 'selected' : '' }}>✅ Programmé (visible côté client)</option>
+                                <option value="en_direct" {{ old('statut') === 'en_direct' ? 'selected' : '' }}>🔴 En Direct (visible côté client)</option>
                             </select>
                             @error('statut')
                                 <span class="error-message">{{ $message }}</span>

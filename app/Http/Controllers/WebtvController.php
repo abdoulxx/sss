@@ -12,13 +12,17 @@ class WebtvController extends Controller
     public function index()
     {
         $utilisateur = Auth::user();
-        
-        // Récupération des webtvs - tous les utilisateurs voient toutes les webtvs
-        // (La table webtvs n'a pas de colonne user_id)
-        $webtvQuery = Webtv::query();
-        
+
+        // Récupération de TOUTES les webtvs pour le dashboard admin (actives et inactives)
+        // Les utilisateurs connectés au dashboard doivent pouvoir gérer toutes les WebTV
+        $webtvQuery = Webtv::query(); // Suppression du filtre est_actif pour le dashboard admin
+
         $webtvs = $webtvQuery->latest('created_at')->paginate(12);
-        return view('webtv.index', compact('webtvs'));
+
+        // Statistiques pour le dashboard
+        $webtvItems = Webtv::all(); // Pour les statistiques, on prend tout
+
+        return view('webtv.index', compact('webtvs', 'webtvItems'));
     }
 
     public function store(Request $request)
@@ -104,24 +108,24 @@ class WebtvController extends Controller
     public function edit(Webtv $webtv)
     {
         $utilisateur = Auth::user();
-        
+
         // Vérification des permissions d'édition
         if (!$utilisateur->peutModifierWebtv($webtv)) {
             abort(403, 'Vous ne pouvez modifier que vos propres événements WebTV.');
         }
-        
+
         return view('webtv.edit', compact('webtv'));
     }
 
     public function update(Request $request, Webtv $webtv)
     {
         $utilisateur = Auth::user();
-        
+
         // Vérification des permissions d'édition
         if (!$utilisateur->peutModifierWebtv($webtv)) {
             abort(403, 'Vous ne pouvez modifier que vos propres événements WebTV.');
         }
-        
+
         $type = $request->input('type_programme', $webtv->type_programme);
 
         $rules = [
@@ -195,12 +199,12 @@ class WebtvController extends Controller
     public function destroy(Webtv $webtv)
     {
         $utilisateur = Auth::user();
-        
+
         // Vérification des permissions de suppression
         if (!$utilisateur->peutModifierWebtv($webtv)) {
             abort(403, 'Vous ne pouvez supprimer que vos propres événements WebTV.');
         }
-        
+
         $webtv->delete();
         return redirect()->route('dashboard.webtv.index')->with('status', 'WebTV supprimé');
     }
@@ -209,6 +213,7 @@ class WebtvController extends Controller
     {
         $webtv->est_actif = !$webtv->est_actif;
         $webtv->save();
+
         return response()->json([
             'succes' => true,
             'est_actif' => $webtv->est_actif,

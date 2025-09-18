@@ -3,6 +3,10 @@
 @section('title', 'Gestion WebTV')
 @section('page-title', 'Gestion WebTV')
 
+@push('head')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+@endpush
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/webtv.css') }}">
     <style>
@@ -19,13 +23,13 @@
             --shadow-light: 0 2px 10px rgba(0,0,0,0.08);
             --shadow-hover: 0 4px 20px rgba(0,0,0,0.12);
         }
-        
+
         /* Layout principal */
         .modern-webtv-section {
             background: #f8f9fa;
             min-height: 100vh;
         }
-        
+
         /* Header amélioré */
         .page-header-modern {
             background: white;
@@ -39,13 +43,13 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-        
+
         .header-content {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-        
+
         .header-icon {
             width: 60px;
             height: 60px;
@@ -57,19 +61,19 @@
             font-size: 1.5rem;
             color: white;
         }
-        
+
         .page-title {
             font-size: 1.8rem;
             font-weight: 700;
             color: var(--text-primary);
             margin: 0;
         }
-        
+
         .page-subtitle {
             color: var(--text-secondary);
             margin: 0.25rem 0 0 0;
         }
-        
+
         .breadcrumb-modern {
             display: flex;
             align-items: center;
@@ -78,24 +82,24 @@
             color: var(--text-secondary);
             margin-top: 0.5rem;
         }
-        
+
         .breadcrumb-item {
             color: var(--text-secondary);
             text-decoration: none;
         }
-        
+
         .breadcrumb-item.active {
             color: var(--ea-gold);
             font-weight: 600;
         }
-        
+
         /* Boutons d'actions du header */
         .header-actions {
             display: flex;
             gap: 1rem;
             align-items: center;
         }
-        
+
         .btn-primary-modern {
             background: linear-gradient(135deg, var(--ea-gold), #e6b800);
             color: #000;
@@ -109,14 +113,14 @@
             border: none;
             transition: all 0.3s ease;
         }
-        
+
         .btn-primary-modern:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-hover);
             color: #000;
             text-decoration: none;
         }
-        
+
         .btn-secondary-modern {
             background: var(--ea-blue);
             color: white;
@@ -130,7 +134,7 @@
             border: none;
             transition: all 0.3s ease;
         }
-        
+
         .btn-secondary-modern:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-hover);
@@ -138,7 +142,7 @@
             color: white;
             text-decoration: none;
         }
-        
+
         /* Toolbar simplifié */
         .webtv-toolbar {
             background: white;
@@ -152,7 +156,7 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-        
+
         .search-group {
             display: flex;
             align-items: center;
@@ -163,7 +167,7 @@
             background: #f8f9fa;
             min-width: 300px;
         }
-        
+
         .search-input {
             background: transparent;
             border: none;
@@ -171,17 +175,17 @@
             color: var(--text-primary);
             width: 100%;
         }
-        
+
         .search-input::placeholder {
             color: var(--text-secondary);
         }
-        
+
         .toolbar-actions {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
-        
+
         .filter-item {
             display: flex;
             align-items: center;
@@ -191,7 +195,7 @@
             border-radius: 8px;
             background: #f8f9fa;
         }
-        
+
         .filter-select {
             background: transparent;
             border: none;
@@ -199,7 +203,7 @@
             color: var(--text-primary);
             cursor: pointer;
         }
-        
+
         /* Messages d'alerte */
         .alert-modern {
             padding: 1rem 1.5rem;
@@ -209,25 +213,35 @@
             gap: 0.75rem;
             margin-bottom: 1rem;
         }
-        
+
         .alert-modern.success {
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid rgba(16, 185, 129, 0.3);
             color: var(--ea-green);
         }
-        
+
+        .webtv-preview {
+            height: 300px;
+            width: 100%;
+        }
+
+        .embed-preview, .embed-container-preview, .embed-container-preview iframe {
+            height: 100%;
+            width: 100%;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .page-header-modern {
                 flex-direction: column;
                 text-align: center;
             }
-            
+
             .header-actions {
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .search-group {
                 min-width: 100%;
             }
@@ -347,7 +361,7 @@
     <!-- WebTV List -->
     <div class="webtv-list-modern">
         @forelse($webtvs as $webtv)
-        <div class="webtv-card-modern">
+        <div class="webtv-card-modern" style="display: grid; grid-template-columns: 500px 1fr; gap: 2rem; min-height: 320px;">
             <div class="webtv-preview">
                 <!-- Status Badge -->
                 <div class="status-badge status-{{ $webtv->statut_couleur }}">
@@ -467,17 +481,13 @@
 
                     <!-- Action Buttons -->
                     <div class="action-buttons">
-                        <button type="button" class="btn-action btn-view" title="Lire" data-embed-container-id="embed-src-{{ $webtv->id }}">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        
                         <!-- Bouton modifier - Permissions selon le rôle -->
                         @if(auth()->check() && auth()->user()->peutModifierWebtv($webtv))
                             <a href="{{ route('dashboard.webtv.edit', $webtv) }}" class="btn-action btn-edit" title="Modifier">
                                 <i class="fas fa-edit"></i>
                             </a>
                         @endif
-                        
+
                         <!-- Bouton supprimer - Permissions selon le rôle -->
                         @if(auth()->check() && auth()->user()->peutModifierWebtv($webtv))
                             <form class="d-inline delete-form" action="{{ route('dashboard.webtv.destroy', $webtv) }}" method="POST">
@@ -532,109 +542,211 @@
 
 
 
+@push('scripts')
 <script>
-// Simple modal for viewing video
-const webtvModal = (() => {
-    let modal, backdrop, content, closeBtn;
-    function ensureModal() {
-        if (modal) return;
-        backdrop = document.createElement('div');
-        backdrop.className = 'webtv-modal-backdrop';
-        backdrop.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:1050;`;
-        modal = document.createElement('div');
-        modal.className = 'webtv-modal';
-        modal.style.cssText = `position:fixed;inset:0;display:none;z-index:1060;align-items:center;justify-content:center;`;
-        const box = document.createElement('div');
-        box.className = 'webtv-modal-box';
-        box.style.cssText = `background:#0b1220;border:1px solid rgba(255,255,255,.08);border-radius:14px;width:min(980px,92vw);padding:10px;box-shadow:0 20px 40px rgba(0,0,0,.35);`;
-        closeBtn = document.createElement('button');
-        closeBtn.className = 'webtv-modal-close';
-        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-        closeBtn.style.cssText = `position:absolute;top:14px;right:18px;background:transparent;border:none;color:#9fb0c6;font-size:20px;cursor:pointer;`;
-        const wrap = document.createElement('div');
-        wrap.className = 'webtv-modal-content-wrap';
-        wrap.style.cssText = `position:relative`;
-        content = document.createElement('div');
-        content.className = 'webtv-modal-content';
-        content.style.cssText = `aspect-ratio:16/9;width:100%;background:#000;border-radius:10px;overflow:hidden;`;
-        wrap.appendChild(closeBtn);
-        wrap.appendChild(content);
-        box.appendChild(wrap);
-        modal.appendChild(box);
-        document.body.appendChild(backdrop);
-        document.body.appendChild(modal);
-        backdrop.addEventListener('click', hide);
-        closeBtn.addEventListener('click', hide);
-    }
-    function show(html) {
-        ensureModal();
-        content.innerHTML = html || '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8">Aucune vidéo</div>';
-        backdrop.style.display = 'block';
-        modal.style.display = 'flex';
-    }
-    function hide() {
-        if (!modal) return;
-        backdrop.style.display = 'none';
-        modal.style.display = 'none';
-        content.innerHTML = '';
-    }
-    return { show, hide };
-})();
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Toggle Actif avec nouveaux sélecteurs
     // Preview size persistence
     const select = document.getElementById('preview-size-select');
     const saved = localStorage.getItem('webtvPreviewSize');
     const applySize = (px) => document.documentElement.style.setProperty('--preview-size', px + 'px');
-    if (saved) {
-        select.value = saved;
-        applySize(saved);
+
+    if (select) {
+        if (saved) {
+            select.value = saved;
+            applySize(saved);
+        }
+        select.addEventListener('change', () => {
+            const val = select.value;
+            applySize(val);
+            localStorage.setItem('webtvPreviewSize', val);
+        });
     }
-    select.addEventListener('change', () => {
-        const val = select.value;
-        applySize(val);
-        localStorage.setItem('webtvPreviewSize', val);
-    });
+
+    // Toggle Actif/Inactif avec popup
     document.querySelectorAll('.toggle-input').forEach(toggle => {
         toggle.addEventListener('change', function() {
-            const id = this.closest('.toggle-switch-modern').dataset.id;
 
-            fetch(`{{ route('dashboard.webtv.index') }}/${id}/toggle-actif`, {
+            const webtvId = this.closest('.toggle-switch-modern').dataset.id;
+            const currentState = this.checked;
+
+            // Chercher le titre dans différents endroits possibles
+            let webtvTitle = 'WebTV';
+
+            const cardElement = this.closest('.card');
+            if (cardElement) {
+                const titleElement = cardElement.querySelector('.webtv-title') ||
+                                   cardElement.querySelector('h3') ||
+                                   cardElement.querySelector('h4') ||
+                                   cardElement.querySelector('h5');
+
+                if (titleElement) {
+                    webtvTitle = titleElement.textContent.trim();
+                }
+            }
+
+            // Message de confirmation
+            const action = currentState ? 'activer' : 'désactiver';
+            const message = `Voulez-vous vraiment ${action} "${webtvTitle}" ?\n\n${currentState ? 'Cette WebTV sera visible sur la page publique.' : 'Cette WebTV sera cachée de la page publique.'}`;
+
+            if (!confirm(message)) {
+                // Annuler le changement si l'utilisateur refuse
+                this.checked = !this.checked;
+                return;
+            }
+
+            // Afficher une popup de chargement
+            showNotification('Mise à jour en cours...', 'info');
+
+            fetch(`/dashboard/webtv/${webtvId}/toggle-actif`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             })
             .then(response => response.json())
             .then(data => {
+
                 if (data.succes) {
-                    // Mettre à jour le statut visuel
-                    const container = this.closest('.toggle-container');
-                    const statusSpan = container.querySelector('.toggle-status');
+                    // Mettre à jour le texte du statut
+                    const statusSpan = this.closest('.toggle-container').querySelector('.toggle-status');
+                    statusSpan.textContent = data.est_actif ? 'ACTIF' : 'INACTIF';
+                    statusSpan.className = `toggle-status ${data.est_actif ? 'active' : 'inactive'}`;
 
-                    if (data.est_actif) {
-                        statusSpan.textContent = 'ACTIF';
-                        statusSpan.classList.remove('inactive');
-                        statusSpan.classList.add('active');
-                    } else {
-                        statusSpan.textContent = 'INACTIF';
-                        statusSpan.classList.remove('active');
-                        statusSpan.classList.add('inactive');
-                    }
+                    // Vérifier que l'état du toggle correspond à la réponse du serveur
+                    this.checked = data.est_actif;
 
-                    // Toast notification
-                    showToast(data.message, 'success');
+                    // Afficher popup de succès
+                    const successMessage = data.est_actif ?
+                        `"${webtvTitle}" est maintenant ACTIF et visible sur la page WebTV` :
+                        `"${webtvTitle}" est maintenant INACTIF et caché de la page WebTV`;
+
+                    showNotification(successMessage, 'success');
+
+                    // Recharger la page après un délai
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    // Remettre le toggle à sa position précédente
+                    this.checked = !this.checked;
+                    showNotification('Erreur lors de la mise à jour: ' + (data.message || 'Erreur inconnue'), 'error');
                 }
             })
             .catch(error => {
-                console.error('Erreur:', error);
-                this.checked = !this.checked; // Revenir à l'état précédent
-                showToast('Erreur lors du changement de statut', 'error');
+                this.checked = !this.checked;
+                showNotification('Erreur de connexion: ' + error.message, 'error');
             });
         });
     });
+
+    // Fonction pour afficher les notifications
+    function showNotification(message, type = 'info') {
+        // Supprimer les anciennes notifications
+        const existingNotifications = document.querySelectorAll('.custom-notification');
+        existingNotifications.forEach(notification => notification.remove());
+
+        // Créer la nouvelle notification
+        const notification = document.createElement('div');
+        notification.className = `custom-notification custom-notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <div class="notification-icon">
+                    ${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'}
+                </div>
+                <div class="notification-message">${message}</div>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">×</button>
+            </div>
+        `;
+
+        // Ajouter les styles si pas déjà présents
+        if (!document.querySelector('#notification-styles')) {
+            const styles = document.createElement('style');
+            styles.id = 'notification-styles';
+            styles.textContent = `
+                .custom-notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    z-index: 10000;
+                    min-width: 300px;
+                    max-width: 500px;
+                    padding: 0;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                    animation: slideInRight 0.3s ease-out;
+                }
+                .custom-notification-success {
+                    background-color: #d4edda;
+                    border-left: 4px solid #28a745;
+                    color: #155724;
+                }
+                .custom-notification-error {
+                    background-color: #f8d7da;
+                    border-left: 4px solid #dc3545;
+                    color: #721c24;
+                }
+                .custom-notification-info {
+                    background-color: #cce7ff;
+                    border-left: 4px solid #007bff;
+                    color: #004085;
+                }
+                .notification-content {
+                    display: flex;
+                    align-items: center;
+                    padding: 15px;
+                }
+                .notification-icon {
+                    font-size: 20px;
+                    font-weight: bold;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                }
+                .notification-message {
+                    flex-grow: 1;
+                    font-weight: 500;
+                    line-height: 1.4;
+                }
+                .notification-close {
+                    background: none;
+                    border: none;
+                    font-size: 20px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    padding: 0;
+                    margin-left: 10px;
+                    opacity: 0.7;
+                    flex-shrink: 0;
+                }
+                .notification-close:hover {
+                    opacity: 1;
+                }
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(styles);
+        }
+
+        // Ajouter au document
+        document.body.appendChild(notification);
+
+        // Auto-fermeture après 5 secondes sauf pour les erreurs
+        if (type !== 'error') {
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+    }
 
     // Changement de statut
     document.querySelectorAll('.status-select').forEach(select => {
@@ -642,7 +754,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const id = this.dataset.id;
             const nouveauStatut = this.value;
 
-            fetch(`{{ route('dashboard.webtv.index') }}/${id}/changer-statut`, {
+            fetch(`/dashboard/webtv/${id}/changer-statut`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -672,15 +784,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Open view modal
-    document.querySelectorAll('.btn-view').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const srcId = btn.getAttribute('data-embed-container-id');
-            const srcEl = document.getElementById(srcId);
-            const html = srcEl ? srcEl.innerHTML.trim() : '';
-            webtvModal.show(html);
-        });
-    });
 });
 
 function showToast(message, type = 'info') {
@@ -739,4 +842,5 @@ function showToast(message, type = 'info') {
     }, 3000);
 }
 </script>
+@endpush
 @endsection

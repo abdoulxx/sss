@@ -744,18 +744,21 @@
                         <div>Brouillon</div>
                         <small>Enregistrer sans publier</small>
                     </div>
-                    @if(auth()->check() && auth()->user()->estJournaliste())
-                        <div class="status-option {{ old('status', $article->status) == 'pending' ? 'selected' : '' }}" data-status="pending">
-                            <i class="fas fa-hourglass-half"></i>
-                            <div>Soumettre</div>
-                            <small>Soumettre pour validation</small>
-                        </div>
-                    @else
-                        <div class="status-option {{ old('status', $article->status) == 'pending' ? 'selected' : '' }}" data-status="pending">
-                            <i class="fas fa-hourglass-half"></i>
-                            <div>En attente</div>
-                            <small>En attente de validation</small>
-                        </div>
+                    @if($article->status !== 'published')
+                        @if(auth()->check() && auth()->user()->estJournaliste())
+                            <div class="status-option {{ old('status', $article->status) == 'pending' ? 'selected' : '' }}" data-status="pending">
+                                <i class="fas fa-hourglass-half"></i>
+                                <div>Soumettre</div>
+                                <small>Soumettre pour validation</small>
+                            </div>
+                        @else
+                            <div class="status-option {{ old('status', $article->status) == 'pending' ? 'selected' : '' }}" data-status="pending">
+                                <i class="fas fa-hourglass-half"></i>
+                                <div>En attente</div>
+                                <small>En attente de validation</small>
+                            </div>
+                        @endif
+                    @endif
                         <div class="status-option {{ old('status', $article->status) == 'published' ? 'selected' : '' }}" data-status="published">
                             <i class="fas fa-globe"></i>
                             <div>Publié</div>
@@ -766,7 +769,6 @@
                             <div>Archivé</div>
                             <small>Article archivé</small>
                         </div>
-                    @endif
                 </div>
                 <input type="hidden" id="status" name="status" value="{{ old('status', $article->status) }}">
             </div>
@@ -873,21 +875,10 @@
                     <i class="fas fa-save"></i>
                     Enregistrer le brouillon
                 </button>
-                @if(auth()->check() && auth()->user()->estJournaliste())
-                    <button type="button" id="submitForReview" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i>
-                        Soumettre pour validation
-                    </button>
-                @else
-                    <button type="button" id="submitForReview" class="btn btn-warning" style="background: #f59e0b;">
-                        <i class="fas fa-hourglass-half"></i>
-                        Marquer en attente
-                    </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-rocket"></i>
-                        Mettre à jour l'article
-                    </button>
-                @endif
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-rocket"></i>
+                    Mettre à jour l'article
+                </button>
             </div>
         </div>
     </form>
@@ -1099,39 +1090,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('articleForm').submit();
     });
 
-    // Submit for review functionality
-    const submitForReviewBtn = document.getElementById('submitForReview');
-    if (submitForReviewBtn) {
-        submitForReviewBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const title = document.getElementById('title').value.trim();
-            const category = document.getElementById('category').value;
-            const excerpt = document.getElementById('excerpt').value.trim();
-            const content = quill.getText().trim();
-            
-            if (!title) {
-                alert('Veuillez saisir un titre');
-                return;
-            }
-            if (!category) {
-                alert('Veuillez sélectionner une catégorie');
-                return;
-            }
-            if (!excerpt) {
-                alert('Veuillez saisir un résumé');
-                return;
-            }
-            if (content.length < 10) {
-                alert('Veuillez saisir du contenu pour l\'article');
-                return;
-            }
-            
-            document.getElementById('status').value = 'pending';
-            document.getElementById('content').value = quill.root.innerHTML;
-            document.getElementById('articleForm').submit();
-        });
-    }
 
     // Form submission
     document.getElementById('articleForm').addEventListener('submit', function() {

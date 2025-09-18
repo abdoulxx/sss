@@ -145,13 +145,13 @@
                             <label for="statut" class="form-label required">Statut Initial</label>
                             <select id="statut" name="statut" class="form-select @error('statut') error @enderror" required>
                                 @if($type === 'live')
-                                    <option value="draft" {{ old('statut', 'draft') === 'draft' ? 'selected' : '' }}>Brouillon</option>
-                                    <option value="programme" {{ old('statut') === 'programme' ? 'selected' : '' }}>Programmé</option>
-                                    <option value="en_direct" {{ old('statut') === 'en_direct' ? 'selected' : '' }}>En Direct</option>
+                                    <option value="draft" {{ old('statut') === 'draft' ? 'selected' : '' }}>🔒 Brouillon (non visible côté client)</option>
+                                    <option value="programme" {{ old('statut', 'programme') === 'programme' ? 'selected' : '' }}>✅ Programmé (visible côté client)</option>
+                                    <option value="en_direct" {{ old('statut') === 'en_direct' ? 'selected' : '' }}>🔴 En Direct (visible côté client)</option>
                                 @else
-                                    <option value="draft" {{ old('statut', 'draft') === 'draft' ? 'selected' : '' }}>Brouillon</option>
-                                    <option value="programme" {{ old('statut') === 'programme' ? 'selected' : '' }}>Publié</option>
-                                    <option value="termine" {{ old('statut') === 'termine' ? 'selected' : '' }}>Archivé</option>
+                                    <option value="draft" {{ old('statut') === 'draft' ? 'selected' : '' }}>🔒 Brouillon (non visible côté client)</option>
+                                    <option value="programme" {{ old('statut', 'programme') === 'programme' ? 'selected' : '' }}>✅ Publié (visible côté client)</option>
+                                    <option value="termine" {{ old('statut') === 'termine' ? 'selected' : '' }}>📁 Archivé (visible côté client)</option>
                                 @endif
                             </select>
                             @error('statut')
@@ -168,7 +168,7 @@
                                        name="est_actif"
                                        value="1"
                                        class="form-checkbox"
-                                       {{ old('est_actif', 0) ? 'checked' : '' }}>
+                                       {{ old('est_actif', 1) ? 'checked' : '' }}>
                                 <label for="est_actif" class="checkbox-label">
                                     {{ $type === 'live' ? 'Activer immédiatement sur la page WebTV' : 'Visible sur la page WebTV' }}
                                 </label>

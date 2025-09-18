@@ -351,37 +351,38 @@
                     <span class="input-group-text">
                         <i class="fas fa-search"></i>
                     </span>
-                    <input type="text" class="form-control" placeholder="Titre, auteur..." id="searchInput">
+                    <input type="text" class="form-control" placeholder="Titre, auteur..." id="searchInput" value="{{ request('search') }}">
                 </div>
             </div>
             <div class="col-lg-2">
                 <label class="form-label">Catégorie</label>
                 <select class="form-select" id="categoryFilter">
                     <option value="">Toutes</option>
-                    <option value="portrait">Portrait</option>
-                    <option value="startup">Startup</option>
-                    <option value="finance">Finance</option>
-                    <option value="tech">Tech</option>
-                    <option value="analyse">Analyse</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
             <div class="col-lg-2">
                 <label class="form-label">Statut</label>
                 <select class="form-select" id="statusFilter">
                     <option value="">Tous</option>
-                    <option value="published">Publié</option>
-                    <option value="draft">Brouillon</option>
-                    <option value="pending">En attente</option>
+                    <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Publié</option>
+                    <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Brouillon</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
                 </select>
             </div>
             <div class="col-lg-2">
                 <label class="form-label">Auteur</label>
                 <select class="form-select" id="authorFilter">
                     <option value="">Tous</option>
-                    <option value="sarah">Sarah Koné</option>
-                    <option value="kwame">Kwame Asante</option>
-                    <option value="aminata">Aminata Traoré</option>
-                    <option value="deza">Deza Auguste</option>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}" {{ request('author') == $user->id ? 'selected' : '' }}>
+                            {{ $user->name }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
             <div class="col-lg-3">
@@ -451,7 +452,7 @@
                                     </div>
                                 @endif
                                 <div>
-                                    <div class="fw-semibold">{{ Str::limit($article->title, 60) }}</div>
+                                    <div class="fw-semibold">{{ $article->title }}</div>
                                     <small class="text-muted">{{ Str::limit($article->excerpt, 80) }}</small>
                                 </div>
                             </div>
@@ -670,7 +671,7 @@ function editArticle(id) {
 }
 
 function viewArticle(id) {
-    alert(`Affichage de l'article ${id}`);
+    window.location.href = `{{ url('dashboard/articles') }}/${id}`;
 }
 
 function deleteArticle(id) {
@@ -685,17 +686,21 @@ function applyFilters() {
     const category = document.getElementById('categoryFilter').value;
     const status = document.getElementById('statusFilter').value;
     const author = document.getElementById('authorFilter').value;
-    
-    console.log('Applying filters:', { search, category, status, author });
-    // Implement filter logic here
+
+    // Construire l'URL avec les paramètres
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (category) params.append('category', category);
+    if (status) params.append('status', status);
+    if (author) params.append('author', author);
+
+    // Rediriger vers la même page avec les filtres
+    window.location.href = `{{ route('dashboard.articles') }}?${params.toString()}`;
 }
 
 function resetFilters() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('categoryFilter').value = '';
-    document.getElementById('statusFilter').value = '';
-    document.getElementById('authorFilter').value = '';
-    applyFilters();
+    // Rediriger vers la page sans paramètres
+    window.location.href = `{{ route('dashboard.articles') }}`;
 }
 
 // View Mode
@@ -709,6 +714,19 @@ function setViewMode(mode) {
         alert('Vue grille à implémenter');
     }
 }
+
+// Search on Enter key
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                applyFilters();
+            }
+        });
+    }
+});
 
 // Bulk Actions
 document.addEventListener('DOMContentLoaded', function() {

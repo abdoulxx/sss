@@ -325,6 +325,7 @@ Route::middleware(['auth', 'verifier.role'])->group(function () {
     Route::get('/dashboard/mes-articles', [App\Http\Controllers\DashboardController::class, 'mesArticles'])->name('dashboard.mes-articles');
     Route::get('/dashboard/articles/create', [App\Http\Controllers\DashboardController::class, 'createArticle'])->name('dashboard.articles.create');
     Route::post('/dashboard/articles', [App\Http\Controllers\DashboardController::class, 'storeArticle'])->name('dashboard.articles.store');
+    Route::get('/dashboard/articles/{id}', [App\Http\Controllers\DashboardController::class, 'showArticle'])->name('dashboard.articles.show');
     Route::get('/dashboard/articles/{id}/edit', [App\Http\Controllers\DashboardController::class, 'editArticle'])->name('dashboard.articles.edit');
     Route::put('/dashboard/articles/{id}', [App\Http\Controllers\DashboardController::class, 'updateArticle'])->name('dashboard.articles.update');
     
@@ -423,6 +424,7 @@ Route::middleware(['auth', 'verifier.role:admin|directeur_publication'])->group(
 Route::middleware(['auth', 'verifier.role'])->group(function () {
     Route::prefix('dashboard/webtv')->name('dashboard.webtv.')->group(function () {
         Route::get('/', [App\Http\Controllers\WebtvController::class, 'index'])->name('index');
+        Route::get('/{webtv}/show', [App\Http\Controllers\WebtvController::class, 'show'])->name('show');
         Route::get('/media/create', function() {
             return view('webtv.create-live');
         })->name('media.create');

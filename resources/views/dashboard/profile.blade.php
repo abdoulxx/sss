@@ -314,18 +314,19 @@
                 </h3>
 
                 <div class="form-group">
-                    <label for="name" class="form-label required">Nom complet</label>
-                    <input 
-                        type="text" 
-                        class="form-control @error('name') is-invalid @enderror" 
-                        id="name" 
-                        name="name" 
-                        value="{{ old('name', $user->name) }}" 
-                        required
+                    <label for="name" class="form-label">Nom complet</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="name"
+                        value="{{ $user->name }}"
+                        disabled
+                        style="background-color: #f8f9fa; color: #6c757d;"
                     >
-                    @error('name')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Le nom ne peut pas être modifié. Contactez un administrateur si nécessaire.
+                    </small>
                 </div>
 
                 <div class="form-group">
@@ -358,12 +359,27 @@
                     </p>
 
                     <div class="form-group">
+                        <label for="current_password" class="form-label">Mot de passe actuel</label>
+                        <input
+                            type="password"
+                            class="form-control @error('current_password') is-invalid @enderror"
+                            id="current_password"
+                            name="current_password"
+                            placeholder="Saisissez votre mot de passe actuel"
+                        >
+                        @error('current_password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">Requis seulement si vous changez de mot de passe</small>
+                    </div>
+
+                    <div class="form-group">
                         <label for="password" class="form-label">Nouveau mot de passe</label>
-                        <input 
-                            type="password" 
-                            class="form-control @error('password') is-invalid @enderror" 
-                            id="password" 
-                            name="password" 
+                        <input
+                            type="password"
+                            class="form-control @error('password') is-invalid @enderror"
+                            id="password"
+                            name="password"
                             minlength="8"
                         >
                         @error('password')
@@ -374,10 +390,10 @@
 
                     <div class="form-group">
                         <label for="password_confirmation" class="form-label">Confirmer le mot de passe</label>
-                        <input 
-                            type="password" 
-                            class="form-control" 
-                            id="password_confirmation" 
+                        <input
+                            type="password"
+                            class="form-control"
+                            id="password_confirmation"
                             name="password_confirmation"
                         >
                     </div>

@@ -23,6 +23,45 @@
     <link rel="stylesheet" href="{{ asset('assets/css/dashboard-pages.css') }}">
 
     @stack('styles')
+
+    <style>
+        /* CSS pour le bouton de déconnexion dans la sidebar */
+        .nav-logout-form {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        .nav-logout-btn {
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            padding: 0.875rem 1.5rem;
+            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-logout-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #dc3545;
+            text-decoration: none;
+        }
+
+        .nav-logout-btn .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-logout-btn .nav-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+    </style>
 </head>
 
 <body class="dashboard-body">
@@ -257,12 +296,6 @@
                                         <span class="nav-subtext">Liste des utilisateurs</span>
                                     </a>
                                 </li>
-                                <li class="nav-subitem">
-                                    <a href="#add-user" class="nav-sublink" data-section="add-user">
-                                        <i class="nav-subicon fas fa-user-plus"></i>
-                                        <span class="nav-subtext">Ajouter un utilisateur</span>
-                                    </a>
-                                </li>
                             </ul>
                         </li>
                         @endif
@@ -330,22 +363,23 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Configuration</div>
                     <ul class="nav-menu">
-                        <!-- Paramètres système - Seulement Super Admin -->
-                        @if(auth()->check() && auth()->user()->estAdmin())
-                            <li class="nav-item {{ request()->routeIs('dashboard.settings') ? 'active' : '' }}">
-                                <a href="{{ route('dashboard.settings') }}" class="nav-link" data-section="settings">
-                                    <i class="nav-icon fas fa-cog"></i>
-                                    <span class="nav-text">Paramètres</span>
-                                </a>
-                            </li>
-                        @endif
-                        
                         <!-- Profil - Accessible à tous -->
                         <li class="nav-item {{ request()->routeIs('dashboard.profile') ? 'active' : '' }}">
                             <a href="{{ route('dashboard.profile') }}" class="nav-link" data-section="profile">
                                 <i class="nav-icon fas fa-user-circle"></i>
                                 <span class="nav-text">Profil</span>
                             </a>
+                        </li>
+
+                        <!-- Déconnexion - Accessible à tous -->
+                        <li class="nav-item">
+                            <form method="POST" action="{{ route('logout') }}" class="nav-logout-form">
+                                @csrf
+                                <button type="submit" class="nav-link nav-logout-btn" data-section="logout">
+                                    <i class="nav-icon fas fa-sign-out-alt text-danger"></i>
+                                    <span class="nav-text text-danger">Se déconnecter</span>
+                                </button>
+                            </form>
                         </li>
                     </ul>
                 </div>
@@ -395,44 +429,8 @@
                             <span class="notification-badge">3</span>
                         </button>
 
-                        <button class="action-btn message-btn">
-                            <i class="fas fa-envelope"></i>
-                            <span class="message-badge">7</span>
-                        </button>
-
-                        <div class="dropdown">
-                            <button class="user-dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <div class="user-avatar-small">
-                                    {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
-                                </div>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('dashboard.settings') }}">
-                                        <i class="fas fa-user me-2"></i>Mon profil
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('dashboard.settings') }}">
-                                        <i class="fas fa-cog me-2"></i>Paramètres
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ route('home') }}" target="_blank">
-                                        <i class="fas fa-external-link-alt me-2"></i>Voir le site
-                                    </a>
-                                </li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Se déconnecter
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
+                        <div class="user-avatar-small">
+                            {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
                         </div>
                     </div>
                 </div>

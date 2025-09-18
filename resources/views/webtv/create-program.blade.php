@@ -337,9 +337,9 @@
                                 <div class="metadata-item">
                                     <label for="statut">Statut de Publication</label>
                                     <select id="statut" name="statut" class="form-select @error('statut') error @enderror" required>
-                                        <option value="draft" {{ old('statut', 'draft') === 'draft' ? 'selected' : '' }}>Brouillon (non publié)</option>
-                                        <option value="programme" {{ old('statut') === 'programme' ? 'selected' : '' }}>Publié (visible)</option>
-                                        <option value="termine" {{ old('statut') === 'termine' ? 'selected' : '' }}>Archivé</option>
+                                        <option value="draft" {{ old('statut') === 'draft' ? 'selected' : '' }}>🔒 Brouillon (non visible côté client)</option>
+                                        <option value="programme" {{ old('statut', 'programme') === 'programme' ? 'selected' : '' }}>✅ Publié (visible côté client)</option>
+                                        <option value="termine" {{ old('statut') === 'termine' ? 'selected' : '' }}>📁 Archivé (visible côté client)</option>
                                     </select>
                                     <div class="field-help">Statut de publication du programme</div>
                                 </div>
