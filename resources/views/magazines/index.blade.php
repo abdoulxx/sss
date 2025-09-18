@@ -463,6 +463,27 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
+.magazine-card.selected {
+    border: 3px solid #D4AF37;
+    box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3);
+    transform: translateY(-5px);
+}
+
+.magazine-card.selected::before {
+    content: "✓ SÉLECTIONNÉ";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(135deg, #D4AF37 0%, #F2CB05 100%);
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 10;
+}
+
 .magazine-cover {
     position: relative;
     overflow: hidden;

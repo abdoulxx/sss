@@ -16,7 +16,7 @@ class MagazineController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth')->except(['publicIndex']);
+        $this->middleware('auth')->except(['publicIndex', 'publicShow']);
         $this->imageManager = new ImageManager(new Driver());
     }
 
@@ -136,23 +136,36 @@ class MagazineController extends Controller
     }
 
     // Public listing
-    public function publicIndex()
+    public function publicIndex(Request $request)
     {
         if (!Schema::hasTable('magazines')) {
             $magazines = collect();
             return view('magazines.index', compact('magazines'));
         }
-        $featured = Magazine::where('status', 'published')
-            ->orderByDesc('is_featured')
-            ->orderByDesc('published_at')
-            ->orderByDesc('created_at')
-            ->first();
+
+        $selectedMagazineId = $request->get('selected');
+        $featured = null;
+
+        if ($selectedMagazineId) {
+            $featured = Magazine::where('status', 'published')
+                ->where('id', $selectedMagazineId)
+                ->first();
+        }
+
+        if (!$featured) {
+            $featured = Magazine::where('status', 'published')
+                ->orderByDesc('is_featured')
+                ->orderByDesc('published_at')
+                ->orderByDesc('created_at')
+                ->first();
+        }
 
         $magazines = Magazine::where('status', 'published')
             ->orderByDesc('is_featured')
             ->orderByDesc('published_at')
             ->orderByDesc('created_at')
             ->paginate(12);
+
         return view('magazines.index', compact('magazines', 'featured'));
     }
 

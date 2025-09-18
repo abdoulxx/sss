@@ -7,8 +7,8 @@
 
 @forelse(($magazines ?? []) as $mag)
   <div class="magazine-item">
-      <a href="{{ route('magazines.show', $mag->slug) }}" class="magazine-card-link">
-          <div class="magazine-card">
+      <a href="{{ route('magazines.index', ['selected' => $mag->id]) }}" class="magazine-card-link">
+          <div class="magazine-card {{ (isset($featured) && $featured && $featured->id == $mag->id) ? 'selected' : '' }}">
               <div class="magazine-cover">
                   @php
                     $src = $mag->cover_thumb_path ? asset('storage/app/public/'.$mag->cover_thumb_path)
