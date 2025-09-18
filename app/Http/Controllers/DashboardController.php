@@ -139,7 +139,11 @@ class DashboardController extends Controller
             'meta_description' => 'nullable|string|max:160',
             'status' => $statusValidation,
             'published_at' => 'nullable|date',
-            'featured' => 'boolean'
+            'featured' => 'boolean',
+            'sector' => 'nullable|string|max:50',
+            'theme' => 'nullable|string|max:50',
+            'tags' => 'nullable|string',
+            'image_alt' => 'nullable|string|max:255'
         ]);
 
         $slug = $validatedData['slug'] ?: $this->generateSlug($validatedData['title']);
@@ -157,6 +161,10 @@ class DashboardController extends Controller
             'status' => $validatedData['status'],
             'is_featured' => $validatedData['featured'] ?? false,
             'reading_time' => $this->calculateReadingTime($validatedData['content']),
+            'sector' => $validatedData['sector'],
+            'theme' => $validatedData['theme'],
+            'tags' => $validatedData['tags'],
+            'featured_image_alt' => $validatedData['image_alt'],
         ];
 
         if ($request->hasFile('featured_image')) {
@@ -213,7 +221,13 @@ class DashboardController extends Controller
             'category_id' => 'required|exists:categories,id',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status' => $statusValidation,
-            'featured' => 'sometimes|boolean'
+            'featured' => 'sometimes|boolean',
+            'sector' => 'nullable|string|max:50',
+            'theme' => 'nullable|string|max:50',
+            'tags' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:60',
+            'meta_description' => 'nullable|string|max:160',
+            'image_alt' => 'nullable|string|max:255'
         ]);
 
         $slug = $article->slug;
@@ -230,6 +244,12 @@ class DashboardController extends Controller
             'status' => $validatedData['status'],
             'reading_time' => $this->calculateReadingTime($validatedData['content']),
             'is_featured' => $request->boolean('featured'),
+            'sector' => $validatedData['sector'],
+            'theme' => $validatedData['theme'],
+            'tags' => $validatedData['tags'],
+            'seo_title' => $validatedData['meta_title'],
+            'seo_description' => $validatedData['meta_description'],
+            'featured_image_alt' => $validatedData['image_alt'],
         ];
 
         if ($request->hasFile('featured_image')) {

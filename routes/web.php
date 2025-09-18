@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\PageController;
 
 //======================================================================
@@ -155,7 +156,7 @@ Route::prefix('articles')->name('articles.')->group(function () {
         return view('articles.index', compact('articles', 'categories')); 
     })->name('index');
     
-    Route::get('/category/{slug}', function ($slug) {
+    Route::get('/category/{slug}', function ($slug, Request $request) {
         $category = \App\Models\Category::where('slug', $slug)->first();
 
         // Robust resolution for "Figures de l'économie" page
@@ -226,20 +227,34 @@ Route::prefix('articles')->name('articles.')->group(function () {
             abort(404, 'Catégorie non trouvée');
         }
         
+        // Récupérer les paramètres de filtrage
+        $sector = $request->get('sector');
+        $theme = $request->get('theme');
+
         $query = \App\Models\Article::with(['category', 'user'])
             ->where('category_id', $category->id)
             ->where('status', 'published')
             ->orderBy('created_at', 'desc');
 
+        // Filtrage par secteur (pour entreprises-impacts et figures-de-leconomie)
+        if ($sector && in_array($category->slug, ['entreprises-impacts', 'figures-de-leconomie'])) {
+            $query->where('sector', $sector);
+        }
+
+        // Filtrage par thème (pour grands-genres)
+        if ($theme && $category->slug === 'grands-genres') {
+            $query->where('theme', $theme);
+        }
+
         $articles = $query->paginate(12)->appends(request()->query());
-            
+
         $relatedCategories = \App\Models\Category::where('status', 'active')
             ->where('id', '!=', $category->id)
             ->withCount('articles')
             ->limit(8)
             ->get();
 
-        return view('articles.category', compact('category', 'articles', 'relatedCategories', 'slug')); 
+        return view('articles.category', compact('category', 'articles', 'relatedCategories', 'slug', 'sector', 'theme')); 
     })->name('category');
     
     Route::get('/{slug}', function ($slug) {
