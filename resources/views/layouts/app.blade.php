@@ -96,6 +96,61 @@ try {
             font-weight: 700;
             text-transform: uppercase;
         }
+
+        /* Styles pour les réseaux sociaux - assurer la visibilité de WhatsApp */
+        .header__social a,
+        .footer-social a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .header__social a i,
+        .footer-social a i {
+            font-size: 18px;
+            color: #333;
+        }
+
+        .footer-social a i {
+            color: #ccc;
+        }
+
+        /* Header social - icônes en blanc avec espacement réduit */
+        .header__social a {
+            margin-left: 5px;
+        }
+
+        .header__social a i {
+            color: white !important;
+        }
+
+        /* Styles spécifiques pour WhatsApp dans le footer - fond vert permanent */
+        .footer-social a.whatsapp {
+            background-color: #25D366 !important;
+        }
+
+        .footer-social a.whatsapp i {
+            color: white !important;
+        }
+
+        /* WhatsApp dans le header - même style blanc que les autres */
+        .header__social a i.fa-whatsapp {
+            color: white !important;
+        }
+
+        /* Effet de survol pour WhatsApp footer - fond plus foncé */
+        .footer-social a.whatsapp:hover {
+            background-color: #128C7E !important;
+        }
+
+        /* Effet de survol pour WhatsApp header - vert au survol */
+        .header__social a:hover i.fa-whatsapp {
+            color: #25D366 !important;
+        }
     </style>
     @stack('styles')
 </head>
@@ -140,6 +195,9 @@ try {
                             </a>
                             <a href="https://www.instagram.com/excellenceafrik/" target="_blank">
                                 <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://whatsapp.com/channel/0029Vb6I52Z1t90aVemzTe2S" target="_blank">
+                                <i class="fab fa-whatsapp"></i>
                             </a>
                         </div>
                     </div>
@@ -313,6 +371,9 @@ try {
                                 <a href="https://www.instagram.com/excellenceafrik/" target="_blank" class="instagram">
                                     <i class="fab fa-instagram"></i>
                                 </a>
+                                <a href="https://whatsapp.com/channel/0029Vb6I52Z1t90aVemzTe2S" target="_blank" class="whatsapp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -355,7 +416,7 @@ try {
                                 <div class="col-xl-3 col-lg-3">
                                     <div class="footer-widget pt-50 mb-30">
                                         <ul>
-                                            <li><a href="#" class="webtv-link"><i class="fas fa-video"></i> WEBTV</a></li>
+                                            <li><a href="{{ route('webtv.index') }}" class="webtv-link"><i class="fas fa-video"></i> WEBTV</a></li>
 
                                         </ul>
                                     </div>

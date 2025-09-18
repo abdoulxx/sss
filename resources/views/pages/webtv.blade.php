@@ -120,10 +120,22 @@
         overflow: hidden;
         box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
     }
     .video-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    .video-card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+    .video-card-link:hover {
+        text-decoration: none;
+        color: inherit;
     }
     .video-thumbnail {
         position: relative;
@@ -455,33 +467,31 @@
                 <div class="videos-grid">
                     @foreach($recentPrograms as $program)
                     <div class="video-card" data-category="{{ \Illuminate\Support\Str::slug($program->categorie) }}">
-                        <div class="video-thumbnail">
-                            <a href="{{ route('webtv.show', $program) }}">
+                        <a href="{{ route('webtv.show', $program) }}" class="video-card-link">
+                            <div class="video-thumbnail">
                                 @if($program->image_path && file_exists(public_path('storage/' . $program->image_path)))
                                     <img src="{{ asset('storage/' . $program->image_path) }}" alt="{{ $program->titre }}">
                                 @else
                                     <img src="{{ asset('assets/default/image_default.jpg') }}" alt="{{ $program->titre }}">
                                 @endif
-                            </a>
-                            <div class="video-duration">{{ $program->duree_estimee_formatee ?? 'N/A' }}</div>
-                            <div class="video-play-overlay">
-                                <i class="fas fa-play"></i>
+                                <div class="video-duration">{{ $program->duree_estimee_formatee ?? 'N/A' }}</div>
+                                <div class="video-play-overlay">
+                                    <i class="fas fa-play"></i>
+                                </div>
                             </div>
-                        </div>
-                        <div class="video-content">
-                            <div class="video-category">{{ ucfirst($program->categorie ?? 'Programme') }}</div>
-                            <h5 class="video-title">
-                                <a href="{{ route('webtv.show', $program) }}" class="text-decoration-none text-dark">
+                            <div class="video-content">
+                                <div class="video-category">{{ ucfirst($program->categorie ?? 'Programme') }}</div>
+                                <h5 class="video-title">
                                     {{ $program->titre }}
-                                </a>
-                            </h5>
-                            <div class="video-meta">
-                                <span class="video-date">{{ $program->date_programmee_formatee ?? $program->created_at->diffForHumans() }}</span>
-                                @if($program->statut)
-                                    <span class="video-status status-{{ $program->statut_couleur }}">{{ $program->statut_formatte }}</span>
-                                @endif
+                                </h5>
+                                <div class="video-meta">
+                                    <span class="video-date">{{ $program->date_programmee_formatee ?? $program->created_at->diffForHumans() }}</span>
+                                    @if($program->statut)
+                                        <span class="video-status status-{{ $program->statut_couleur }}">{{ $program->statut_formatte }}</span>
+                                    @endif
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                     @endforeach
                 </div>
