@@ -415,4 +415,219 @@ class DashboardController extends Controller
     {
         Article::where('category_id', $categoryId)->where('id', '!=', $articleId)->update(['is_featured' => 0]);
     }
+
+    /**
+     * Show users list for admin/director
+     */
+    public function users()
+    {
+        // Vérifier les permissions
+        $user = Auth::user();
+        if (!$user->estAdmin() && !$user->estDirecteurPublication()) {
+            abort(403, 'Accès non autorisé');
+        }
+
+        $users = User::orderBy('created_at', 'desc')->paginate(15);
+
+        return view('dashboard.users.index', compact('users'));
+    }
+
+    /**
+     * Get users list as JSON for API calls
+     */
+    public function getUsers()
+    {
+        // Vérifier les permissions
+        $user = Auth::user();
+        if (!$user->estAdmin() && !$user->estDirecteurPublication()) {
+            return response()->json(['error' => 'Accès non autorisé'], 403);
+        }
+
+        $users = User::orderBy('created_at', 'desc')->get();
+
+        return response()->json(['users' => $users]);
+    }
+
+    /**
+     * Get specific user by ID
+     */
+    public function getUser($id)
+    {
+        // Vérifier les permissions
+        $user = Auth::user();
+        if (!$user->estAdmin() && !$user->estDirecteurPublication()) {
+            return response()->json(['error' => 'Accès non autorisé'], 403);
+        }
+
+        $targetUser = User::findOrFail($id);
+        return response()->json($targetUser);
+    }
+
+    /**
+     * Create a new user
+     */
+    public function createUser(Request $request)
+    {
+        try {
+            // Vérifier les permissions
+            $currentUser = Auth::user();
+            if (!$currentUser->estAdmin()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Seuls les administrateurs peuvent créer des utilisateurs'
+                ], 403);
+            }
+
+            // Validation des données
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email',
+                'password' => 'required|string|min:8',
+                'role_utilisateur' => 'required|in:admin,directeur_publication,journaliste',
+                'est_actif' => 'sometimes|boolean'
+            ]);
+
+            // Préparer les données pour la création
+            $userData = [
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'password' => bcrypt($validatedData['password']),
+                'role_utilisateur' => $validatedData['role_utilisateur'],
+                'est_actif' => $request->has('est_actif') ? (bool)$request->input('est_actif') : true,
+                'email_verified_at' => now(), // Marquer comme vérifié par défaut
+            ];
+
+            // Créer l'utilisateur
+            $newUser = User::create($userData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Utilisateur créé avec succès',
+                'user' => $newUser
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Erreur création utilisateur: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la création de l\'utilisateur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update existing user
+     */
+    public function updateUser(Request $request, $id)
+    {
+        try {
+            // Vérifier les permissions
+            $currentUser = Auth::user();
+            if (!$currentUser->estAdmin() && !$currentUser->estDirecteurPublication()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Accès non autorisé'
+                ], 403);
+            }
+
+            $targetUser = User::findOrFail($id);
+
+            // Seuls les admins peuvent modifier d'autres admins ou directeurs
+            if (($targetUser->estAdmin() || $targetUser->estDirecteurPublication()) && !$currentUser->estAdmin()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Seuls les administrateurs peuvent modifier les comptes administrateurs'
+                ], 403);
+            }
+
+            // Règles de validation
+            $validationRules = [
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+                'role_utilisateur' => 'required|in:admin,directeur_publication,journaliste',
+                'est_actif' => 'sometimes|boolean'
+            ];
+
+            // Ajouter validation password si fourni
+            if ($request->filled('password')) {
+                $validationRules['password'] = 'string|min:8';
+            }
+
+            $validatedData = $request->validate($validationRules);
+
+            // Préparer les données de mise à jour
+            $updateData = [
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'role_utilisateur' => $validatedData['role_utilisateur'],
+                'est_actif' => $request->has('est_actif') ? (bool)$request->input('est_actif') : $targetUser->est_actif,
+            ];
+
+            // Ajouter le mot de passe s'il est fourni
+            if ($request->filled('password')) {
+                $updateData['password'] = bcrypt($validatedData['password']);
+            }
+
+            $targetUser->update($updateData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Utilisateur modifié avec succès',
+                'user' => $targetUser->fresh()
+            ], 200);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Erreur modification utilisateur: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la modification de l\'utilisateur: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete user
+     */
+    public function deleteUser($id)
+    {
+        // Vérifier les permissions
+        $currentUser = Auth::user();
+        if (!$currentUser->estAdmin()) {
+            return response()->json(['error' => 'Seuls les administrateurs peuvent supprimer des utilisateurs'], 403);
+        }
+
+        $targetUser = User::findOrFail($id);
+
+        // Empêcher l'auto-suppression
+        if ($targetUser->id === $currentUser->id) {
+            return response()->json(['error' => 'Vous ne pouvez pas supprimer votre propre compte'], 400);
+        }
+
+        // Vérifier s'il y a des articles liés
+        $articlesCount = Article::where('user_id', $targetUser->id)->count();
+        if ($articlesCount > 0) {
+            return response()->json([
+                'error' => "Impossible de supprimer cet utilisateur car il a $articlesCount article(s) associé(s)"
+            ], 400);
+        }
+
+        $targetUser->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Utilisateur supprimé avec succès'
+        ]);
+    }
 }

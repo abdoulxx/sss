@@ -522,6 +522,22 @@
             text-align: center;
             width: 100%;
         }
+        .red-dot-divider {
+        width: 9px;
+        height: 9px;
+        background-color: #dc3545;
+        border-radius: 50%;
+        animation: pulse-red-dot 1.5s ease-in-out infinite;
+        margin: 0 15px;
+        flex-shrink: 0;
+        }
+
+        @keyframes pulse-red-dot {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); opacity: 0.7; }
+        100% { transform: scale(1); }
+        }
+
         .ticker__content {
             height: 35px;
             overflow: hidden;
@@ -554,6 +570,7 @@
         .ticker__content ul li:last-child::after {
             content: "";
         }
+        
 
         /* Animation de défilement horizontal pour mobile */
         @keyframes scrollHorizontal {
@@ -605,6 +622,7 @@
                                 <div class="ticker__label">
                                     <i class="fas fa-bolt"></i> FLASH INFO
                                 </div>
+                                <span class="red-dot-divider"></span>
                                 <div class="ticker__content">
                                     <ul>
                                         @forelse($flashInfos as $flashInfo)
@@ -760,7 +778,7 @@
                                                 $thumb_path = $article->featured_image_path ? preg_replace('/(\.[^.]+)$/', '_thumb$1', $article->featured_image_path) : null;
                                                   
                                             @endphp
-                                            <img src="{{ ($thumb_path && file_exists(public_path('storage/app/public/' . $thumb_path))) ? asset('storage/app/public/' . $thumb_path) : asset('assets/default/image_default.jpg') }}" alt="{{ $article->title }}" style="height: 100%; width: 100%; object-fit: cover;">
+                                            <img src="{{ ($thumb_path && file_exists(storage_path('app/public/' . $thumb_path))) ? asset('storage/app/public/' . $thumb_path) : asset('assets/default/image_default.jpg') }}" alt="{{ $article->title }}" style="height: 100%; width: 100%; object-fit: cover;">
                                         </a>
                                     </div>
                                     <div class="hero__text">
@@ -787,7 +805,7 @@
                                              @php
                                                 $thumb_path = $article->featured_image_path ? preg_replace('/(\.[^.]+)$/', '_thumb$1', $article->featured_image_path) : null;
                                             @endphp
-                                            <img src="{{ ($thumb_path && file_exists(public_path('storage/app/public/' . $thumb_path))) ? asset('storage/app/public/' . $thumb_path) : asset('assets/default/image_default.jpg') }}" alt="{{ $article->title }}" style="height: 100%; width: 100%; object-fit: cover;">
+                                            <img src="{{ ($thumb_path && file_exists(storage_path('app/public/' . $thumb_path))) ? asset('storage/app/public/' . $thumb_path) : asset('assets/default/image_default.jpg') }}" alt="{{ $article->title }}" style="height: 100%; width: 100%; object-fit: cover;">
                                         </a>
                                     </div>
                                     <div class="hero__text hero__text-small">
@@ -939,7 +957,7 @@
             if (totalItems > 0) {
                 if (!isMobile) {
                     // Animation verticale pour desktop
-                    const displayTime = 4; // Temps d'affichage par Flash Info (secondes)
+                    const displayTime = 6; // Temps d'affichage par Flash Info (secondes)
                     const totalCycleTime = totalItems * displayTime; // Durée totale du cycle complet
 
                     flashInfoItems.forEach((item, index) => {
@@ -1026,7 +1044,7 @@
                 if (days > 0) {
                     display = `<span style="color: #f4c700; font-weight: bold; font-size: 1.2em;">${days}</span><span style="color: #ffffff;">j</span> <span style="color: #f4c700; font-weight: bold; font-size: 1.2em;">${hours}</span><span style="color: #ffffff;">h</span> <span style="color: #f4c700; font-weight: bold; font-size: 1.2em;">${minutes}</span><span style="color: #ffffff;">min</span>`;
                 } else if (hours > 0) {
-                    display = `<span style="color: #f4c700; font-weight: bold; font-size: 1.2em;">${hours}</span><span style="color: #ffffff;">h</span> <span style="color: #f4c700; font-weight: bold; font-size: 1.2em;">${minutes}</span><span style="color: #ffffff;">min</span> <span style="color: #f4c700; font-weight: bold; font-size: 1.2em;">${seconds}</span><span style="color: #ffffff;">s</span>`;
+                    display = `<span style="color: #f4c700; font-weight: bold; font-size: 1.2em;">${hours}</span><span style="color: #ffffff;">h</span> <span style="color: #f4c700; font-weight: bold; font-size: 1.2em;">${minutes}</span><span style="color: #ffffff;">min</span> <span style="color: #f4c700; font-weight: bold;.size: 1.2em;">${seconds}</span><span style="color: #ffffff;">s</span>`;
                 } else if (minutes > 0) {
                     display = `<span style="color: #f4c700; font-weight: bold; font-size: 1.3em;">${minutes}</span><span style="color: #ffffff;">min</span> <span style="color: #f4c700; font-weight: bold; font-size: 1.3em;">${seconds}</span><span style="color: #ffffff;">s</span>`;
                 } else {
