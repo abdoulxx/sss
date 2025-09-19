@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Mail\WelcomeUser;
 use App\Models\User;
 use App\Models\Category;
 use App\Models\Article;
@@ -605,12 +607,23 @@ class DashboardController extends Controller
                 'email_verified_at' => now(), // Marquer comme vérifié par défaut
             ];
 
+            // Stocker le mot de passe en clair pour l'email (avant le cryptage)
+            $plainPassword = $validatedData['password'];
+
             // Créer l'utilisateur
             $newUser = User::create($userData);
 
+            // Envoyer l'email de bienvenue
+            try {
+                $this->sendWelcomeEmail($newUser, $plainPassword);
+            } catch (\Exception $e) {
+                \Log::error('Erreur envoi email bienvenue: ' . $e->getMessage());
+                // Ne pas faire échouer la création si l'email échoue
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Utilisateur créé avec succès',
+                'message' => 'Utilisateur créé avec succès. Un email de bienvenue a été envoyé.',
                 'user' => $newUser
             ], 201);
 
@@ -626,6 +639,20 @@ class DashboardController extends Controller
                 'success' => false,
                 'message' => 'Erreur lors de la création de l\'utilisateur: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Send welcome email to new user
+     */
+    private function sendWelcomeEmail(User $user, string $password)
+    {
+        try {
+            Mail::to($user->email)->send(new WelcomeUser($user, $password));
+            \Log::info("Email de bienvenue envoyé avec succès à {$user->email}");
+        } catch (\Exception $e) {
+            \Log::error("Échec envoi email bienvenue à {$user->email}: " . $e->getMessage());
+            throw $e;
         }
     }
 

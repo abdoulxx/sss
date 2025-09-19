@@ -627,10 +627,32 @@
                 Images et Médias
             </h2>
             
-            @if($article->featured_image_path && file_exists(public_path('storage/' . $article->featured_image_path)))
+            @if(($article->featured_image_path && file_exists(storage_path('app/public/' . $article->featured_image_path))) || $article->featured_image_url)
                 <div class="image-preview-container">
-                    <img src="{{ asset('storage/' . $article->featured_image_path) }}" class="current-image" alt="Image actuelle">
-                    <p><small>Image actuelle</small></p>
+                    <label class="form-label">Image actuelle</label>
+                    <div style="border: 2px solid #e5e7eb; border-radius: 0.5rem; padding: 1rem; background: #f9fafb; margin-bottom: 1rem;">
+                        @if($article->featured_image_path && file_exists(storage_path('app/public/' . $article->featured_image_path)))
+                            <img src="{{ asset('storage/app/public/' . $article->featured_image_path) }}"
+                                 class="current-image"
+                                 alt="{{ $article->image_alt ?? 'Image de l\'article' }}"
+                                 style="max-width: 300px; max-height: 200px; object-fit: cover; border-radius: 0.5rem; display: block; margin: 0 auto;">
+                            <p style="text-align: center; margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #6b7280;">
+                                <i class="fas fa-image"></i> Image locale: {{ basename($article->featured_image_path) }}
+                            </p>
+                        @elseif($article->featured_image_url)
+                            <img src="{{ $article->featured_image_url }}"
+                                 class="current-image"
+                                 alt="{{ $article->image_alt ?? 'Image de l\'article' }}"
+                                 style="max-width: 300px; max-height: 200px; object-fit: cover; border-radius: 0.5rem; display: block; margin: 0 auto;"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <div style="display: none; text-align: center; padding: 2rem; color: #ef4444;">
+                                <i class="fas fa-exclamation-triangle"></i> Image non accessible
+                            </div>
+                            <p style="text-align: center; margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #6b7280;">
+                                <i class="fas fa-link"></i> Image URL: {{ Str::limit($article->featured_image_url, 50) }}
+                            </p>
+                        @endif
+                    </div>
                 </div>
             @endif
             

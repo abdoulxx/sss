@@ -61,6 +61,108 @@
             font-size: 0.875rem;
             font-weight: 500;
         }
+
+        /* Styles pour les notifications */
+        .notification-dropdown {
+            width: 380px;
+            max-height: 400px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-radius: 8px;
+        }
+
+        .notification-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background-color: #e8f4f8;
+            border-left: 4px solid #0066cc;
+        }
+
+        .notification-item.unread::before {
+            content: '';
+            position: absolute;
+            right: 12px;
+            top: 16px;
+            width: 8px;
+            height: 8px;
+            background-color: #0066cc;
+            border-radius: 50%;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .notification-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.article { background-color: #28a745; }
+        .notification-icon.user { background-color: #007bff; }
+        .notification-icon.webtv { background-color: #dc3545; }
+        .notification-icon.system { background-color: #6c757d; }
+
+        .notification-text {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 2px;
+            color: #333;
+        }
+
+        .notification-message {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .notification-badge {
+            background-color: #dc3545;
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 50%;
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            min-width: 16px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -186,13 +288,6 @@
                             </ul>
                         </li>
 
-                        <!-- Gestion des Articles À la une -->
-                        <li class="nav-item {{ request()->routeIs('dashboard.a_la_une.*') ? 'active' : '' }}">
-                            <a href="{{ route('dashboard.a_la_une.index') }}" class="nav-link">
-                                <i class="nav-icon fas fa-star"></i>
-                                <span class="nav-text">Articles À la une</span>
-                            </a>
-                        </li>
 
                         <!-- Gestion WebTV - Accessible à tous les utilisateurs authentifiés -->
                         @if(auth()->check())
@@ -424,10 +519,28 @@
                     </div>
 
                     <div class="header-actions">
-                        <button class="action-btn notification-btn">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge">3</span>
-                        </button>
+                        <!-- Notifications Dropdown -->
+                        <div class="dropdown">
+                            <button class="action-btn notification-btn" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge" id="notificationCount" style="display: none;">0</span>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown">
+                                <div class="dropdown-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">Notifications</h6>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="markAllAsRead()">
+                                        <i class="fas fa-check-double"></i> Tout marquer lu
+                                    </button>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div id="notificationsList" class="notification-list">
+                                    <div class="text-center text-muted p-3">
+                                        <i class="fas fa-bell-slash fa-2x mb-2"></i>
+                                        <p class="mb-0">Aucune notification</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="user-avatar-small">
                             {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
@@ -537,29 +650,233 @@
             return icons[type] || icons['info'];
         }
         
+        // Gestion des notifications du dropdown
+        let notifications = [];
+        let unreadCount = 0;
+
+        // Simuler des notifications basées sur le rôle de l'utilisateur
+        function initializeNotifications() {
+            const userRole = '{{ Auth::user()->nom_role ?? "journaliste" }}';
+            const userName = '{{ Auth::user()->name ?? "Utilisateur" }}';
+
+            // Notifications communes à tous les profils
+            const commonNotifications = [
+                {
+                    id: 1,
+                    type: 'system',
+                    title: 'Bienvenue sur Excellence Afrik',
+                    message: 'Système de notifications activé avec succès',
+                    time: 'Il y a 2 minutes',
+                    unread: true,
+                    icon: 'fa-check-circle'
+                },
+                {
+                    id: 2,
+                    type: 'article',
+                    title: 'Nouvel article publié',
+                    message: 'Article "Économie africaine 2024" maintenant disponible',
+                    time: 'Il y a 1 heure',
+                    unread: true,
+                    icon: 'fa-newspaper'
+                }
+            ];
+
+            // Notifications spécifiques par rôle
+            const roleNotifications = {
+                'admin': [
+                    {
+                        id: 3,
+                        type: 'user',
+                        title: 'Nouvel utilisateur',
+                        message: 'Un nouveau journaliste s\'est inscrit',
+                        time: 'Il y a 30 minutes',
+                        unread: true,
+                        icon: 'fa-user-plus'
+                    },
+                    {
+                        id: 4,
+                        type: 'system',
+                        title: 'Sauvegarde système',
+                        message: 'Sauvegarde automatique effectuée avec succès',
+                        time: 'Il y a 2 heures',
+                        unread: false,
+                        icon: 'fa-database'
+                    }
+                ],
+                'directeur_publication': [
+                    {
+                        id: 5,
+                        type: 'article',
+                        title: 'Article en attente',
+                        message: '3 articles attendent votre validation',
+                        time: 'Il y a 15 minutes',
+                        unread: true,
+                        icon: 'fa-clock'
+                    },
+                    {
+                        id: 6,
+                        type: 'webtv',
+                        title: 'WebTV programmée',
+                        message: 'Live "Débat économique" prévu à 15h',
+                        time: 'Il y a 45 minutes',
+                        unread: true,
+                        icon: 'fa-video'
+                    }
+                ],
+                'journaliste': [
+                    {
+                        id: 7,
+                        type: 'article',
+                        title: 'Article approuvé',
+                        message: 'Votre article "Innovation tech" a été publié',
+                        time: 'Il y a 20 minutes',
+                        unread: true,
+                        icon: 'fa-check'
+                    },
+                    {
+                        id: 8,
+                        type: 'system',
+                        title: 'Rappel',
+                        message: 'N\'oubliez pas de mettre à jour votre profil',
+                        time: 'Il y a 1 jour',
+                        unread: false,
+                        icon: 'fa-user-edit'
+                    }
+                ]
+            };
+
+            // Combiner les notifications
+            notifications = [...commonNotifications];
+            if (roleNotifications[userRole]) {
+                notifications = [...notifications, ...roleNotifications[userRole]];
+            }
+
+            // Calculer le nombre de non lues
+            unreadCount = notifications.filter(n => n.unread).length;
+
+            // Mettre à jour l'affichage
+            updateNotificationBadge();
+            updateNotificationsList();
+        }
+
+        function updateNotificationBadge() {
+            const badge = document.getElementById('notificationCount');
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        function updateNotificationsList() {
+            const container = document.getElementById('notificationsList');
+
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-muted p-3">
+                        <i class="fas fa-bell-slash fa-2x mb-2"></i>
+                        <p class="mb-0">Aucune notification</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const notificationsHTML = notifications.map(notification => `
+                <div class="notification-item ${notification.unread ? 'unread' : ''}" onclick="markAsRead(${notification.id})">
+                    <div class="notification-content">
+                        <div class="notification-icon ${notification.type}">
+                            <i class="fas ${notification.icon}"></i>
+                        </div>
+                        <div class="notification-text">
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-message">${notification.message}</div>
+                            <div class="notification-time">${notification.time}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = notificationsHTML;
+        }
+
+        function markAsRead(notificationId) {
+            const notification = notifications.find(n => n.id === notificationId);
+            if (notification && notification.unread) {
+                notification.unread = false;
+                unreadCount = Math.max(0, unreadCount - 1);
+                updateNotificationBadge();
+                updateNotificationsList();
+            }
+        }
+
+        function markAllAsRead() {
+            notifications.forEach(n => n.unread = false);
+            unreadCount = 0;
+            updateNotificationBadge();
+            updateNotificationsList();
+            showNotification('Toutes les notifications ont été marquées comme lues', 'success');
+        }
+
+
+        // Simuler de nouvelles notifications
+        function addNotification(type, title, message, icon = 'fa-info-circle') {
+            const newNotification = {
+                id: Date.now(),
+                type: type,
+                title: title,
+                message: message,
+                time: 'À l\'instant',
+                unread: true,
+                icon: icon
+            };
+
+            notifications.unshift(newNotification);
+            unreadCount++;
+            updateNotificationBadge();
+            updateNotificationsList();
+        }
+
         // Afficher les messages de session Laravel
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les notifications
+            initializeNotifications();
+
             @if(session('success'))
                 showNotification("{{ session('success') }}", 'success');
             @endif
-            
+
             @if(session('error'))
                 showNotification("{{ session('error') }}", 'danger');
             @endif
-            
+
             @if(session('warning'))
                 showNotification("{{ session('warning') }}", 'warning');
             @endif
-            
+
             @if(session('info'))
                 showNotification("{{ session('info') }}", 'info');
             @endif
-            
+
             @if($errors->any())
                 @foreach($errors->all() as $error)
                     showNotification("{{ $error }}", 'danger');
                 @endforeach
             @endif
+
+            // Simuler de nouvelles notifications périodiquement (pour la démo)
+            setInterval(() => {
+                const types = ['article', 'user', 'webtv', 'system'];
+                const messages = [
+                    { type: 'article', title: 'Nouvel article', message: 'Un nouvel article a été publié', icon: 'fa-newspaper' },
+                    { type: 'user', title: 'Nouveau commentaire', message: 'Votre article a reçu un nouveau commentaire', icon: 'fa-comment' },
+                    { type: 'webtv', title: 'WebTV en live', message: 'Une émission WebTV a commencé', icon: 'fa-play-circle' },
+                    { type: 'system', title: 'Mise à jour', message: 'Le système a été mis à jour', icon: 'fa-sync' }
+                ];
+
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                addNotification(randomMessage.type, randomMessage.title, randomMessage.message, randomMessage.icon);
+            }, 30000); // Nouvelle notification toutes les 30 secondes
         });
     </script>
 </body>
