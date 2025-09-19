@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Models\NewsletterSubscriber;
+use App\Mail\NewsletterWelcome;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -28,25 +30,55 @@ class NewsletterController extends Controller
         ]);
 
         if ($validator->fails()) {
+            $error = '⚠️ Veuillez vérifier votre adresse email. Elle doit être valide pour recevoir nos newsletters.';
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $error,
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput()
-                ->with('error', '⚠️ Veuillez vérifier votre adresse email. Elle doit être valide pour recevoir nos newsletters.');
+                ->with('error', $error);
         }
 
         $email = $request->email;
         $source = $request->source ?? 'website';
-        
+
         // Vérifier si l'email existe déjà
         $existing = NewsletterSubscriber::where('email', $email)->first();
-        
+
         if ($existing) {
             if ($existing->is_active) {
-                return redirect()->back()->with('info', '📧 Vous êtes déjà abonné(e) à notre newsletter ! Vérifiez votre boîte email pour nos dernières actualités.');
+                $message = '📧 Vous êtes déjà abonné(e) à notre newsletter ! Vérifiez votre boîte email pour nos dernières actualités.';
+
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                        'type' => 'already_subscribed'
+                    ]);
+                }
+
+                return redirect()->back()->with('info', $message);
             } else {
                 // Réactiver l'abonnement
                 $existing->resubscribe();
-                return redirect()->back()->with('success', '🎉 Bienvenue à nouveau ! Votre abonnement à la newsletter Excellence Afrik a été réactivé avec succès.');
+                $message = '🎉 Bienvenue à nouveau ! Votre abonnement à la newsletter Excellence Afrik a été réactivé avec succès.';
+
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => $message,
+                        'type' => 'reactivated'
+                    ]);
+                }
+
+                return redirect()->back()->with('success', $message);
             }
         }
 
@@ -60,15 +92,47 @@ class NewsletterController extends Controller
                 'email_verified_at' => now(), // Auto-vérification pour simplifier
             ]);
 
+            // Envoyer l'email de bienvenue
+            try {
+                $this->sendWelcomeEmail($subscriber);
+                \Log::info("Email de bienvenue newsletter envoyé à {$subscriber->email}");
+            } catch (\Exception $e) {
+                \Log::error("Erreur envoi email bienvenue newsletter à {$subscriber->email}: " . $e->getMessage());
+                // Ne pas faire échouer l'inscription si l'email échoue
+            }
+
             // Message personnalisé selon le type d'abonnement
-            $message = $subscriber->is_premium 
+            $message = $subscriber->is_premium
                 ? '🎉 Félicitations ! Vous êtes maintenant abonné(e) à notre newsletter Premium. Profitez de contenus exclusifs et d\'analyses approfondies sur l\'économie africaine !'
                 : '✅ Merci pour votre inscription ! Vous recevrez désormais nos meilleures actualités économiques africaines directement dans votre boîte email.';
-            
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'type' => $subscriber->is_premium ? 'premium_subscribed' : 'subscribed',
+                    'subscriber' => [
+                        'email' => $subscriber->email,
+                        'is_premium' => $subscriber->is_premium,
+                        'source' => $subscriber->source
+                    ]
+                ]);
+            }
+
             return redirect()->back()->with('success', $message);
         } catch (\Exception $e) {
             \Log::error('Newsletter subscription error: ' . $e->getMessage());
-            return redirect()->back()->with('error', '❌ Une erreur est survenue lors de l\'inscription. Notre équipe technique a été notifiée. Veuillez réessayer dans quelques instants.');
+            $error = '❌ Une erreur est survenue lors de l\'inscription. Notre équipe technique a été notifiée. Veuillez réessayer dans quelques instants.';
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $error,
+                    'type' => 'server_error'
+                ], 500);
+            }
+
+            return redirect()->back()->with('error', $error);
         }
     }
 
@@ -88,6 +152,56 @@ class NewsletterController extends Controller
             $message = 'Vous avez été désabonné(e) avec succès de notre newsletter.';
         } else {
             $message = 'Vous êtes déjà désabonné(e) de notre newsletter.';
+        }
+
+        return view('newsletter.unsubscribed', compact('subscriber', 'message'));
+    }
+
+    /**
+     * Réabonnement (public)
+     */
+    public function resubscribe(Request $request, $token)
+    {
+        $subscriber = NewsletterSubscriber::where('unsubscribe_token', $token)->first();
+
+        if (!$subscriber) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lien de réabonnement invalide.',
+                    'type' => 'invalid_token'
+                ], 404);
+            }
+            return redirect('/')->with('error', 'Lien de réabonnement invalide.');
+        }
+
+        if (!$subscriber->is_active) {
+            $subscriber->resubscribe();
+
+            // Envoyer email de bienvenue pour le réabonnement
+            try {
+                $this->sendWelcomeEmail($subscriber);
+                \Log::info("Email de bienvenue réabonnement envoyé à {$subscriber->email}");
+            } catch (\Exception $e) {
+                \Log::error("Erreur envoi email bienvenue réabonnement à {$subscriber->email}: " . $e->getMessage());
+            }
+
+            $message = '🎉 Bienvenue à nouveau ! Votre réabonnement à la newsletter Excellence Afrik a été confirmé avec succès.';
+        } else {
+            $message = '📧 Vous êtes déjà abonné(e) à notre newsletter !';
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'type' => $subscriber->is_active ? 'resubscribed' : 'already_active',
+                'subscriber' => [
+                    'email' => $subscriber->email,
+                    'is_active' => $subscriber->is_active,
+                    'source' => $subscriber->source
+                ]
+            ]);
         }
 
         return view('newsletter.unsubscribed', compact('subscriber', 'message'));
@@ -361,6 +475,20 @@ class NewsletterController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Envoyer l'email de bienvenue newsletter
+     */
+    private function sendWelcomeEmail(NewsletterSubscriber $subscriber)
+    {
+        try {
+            Mail::to($subscriber->email)->send(new NewsletterWelcome($subscriber));
+            \Log::info("Email de bienvenue newsletter envoyé avec succès à {$subscriber->email}");
+        } catch (\Exception $e) {
+            \Log::error("Échec envoi email bienvenue newsletter à {$subscriber->email}: " . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**

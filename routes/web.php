@@ -502,6 +502,7 @@ Route::middleware(['auth', 'verifier.role:admin'])->group(function () {
 // Newsletter routes (public)
 Route::post('/newsletter/subscribe', [App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::get('/newsletter/unsubscribe/{token}', [App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+Route::post('/newsletter/resubscribe/{token}', [App\Http\Controllers\NewsletterController::class, 'resubscribe'])->name('newsletter.resubscribe');
 Route::get('/newsletter/verify/{token}', [App\Http\Controllers\NewsletterController::class, 'verify'])->name('newsletter.verify');
 
 // Weather API route

@@ -356,6 +356,64 @@
         margin-right: 15px;
         position: relative;
         z-index: 10;
+        animation: flashLabelPulse 2s ease-in-out infinite;
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+
+    .ticker__label::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        background: linear-gradient(45deg, #dc3545, #ff6b6b, #dc3545);
+        border-radius: 7px;
+        z-index: -1;
+        animation: flashBorderPulse 1.5s ease-in-out infinite;
+    }
+
+    .ticker__label::after {
+        content: '🔴';
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        font-size: 12px;
+        animation: redDotBlink 1s ease-in-out infinite;
+        filter: drop-shadow(0 0 3px rgba(220, 53, 69, 0.8));
+    }
+
+    @keyframes flashLabelPulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+    }
+
+    @keyframes flashBorderPulse {
+        0%, 100% {
+            opacity: 0.8;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+    }
+
+    @keyframes redDotBlink {
+        0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 0.3;
+            transform: scale(1.2);
+        }
     }
     .ticker__content {
         overflow: hidden;
@@ -931,9 +989,6 @@
             </div>
         </section>
         @endif
-
-
-
     </main>
     <!-- ============================================================== -->
     <!-- FIN DU CONTENU PRINCIPAL -->

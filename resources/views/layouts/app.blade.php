@@ -334,12 +334,20 @@ try {
                                 </div>
                                 <div class="col-xl-5 col-lg-5">
                                     <div class="subscribe-form mb-30">
-                                        <form action="#">
-                                            <input type="email" placeholder="Entrez votre adresse E-mail">
-                                            <button type="submit">
-                                                Abonnez-vous
-                                            </button>
+                                        <form action="{{ route('newsletter.subscribe') }}" method="POST" id="footerNewsletterForm">
+                                            @csrf
+                                            <input type="hidden" name="source" value="footer">
+                                            <div class="form-group-inline">
+                                                <input type="email" name="email" placeholder="Entrez votre adresse E-mail" required>
+                                                <button type="submit">
+                                                    <span class="btn-text">Abonnez-vous</span>
+                                                    <span class="btn-loading" style="display: none;">
+                                                        <i class="fas fa-spinner fa-spin"></i>
+                                                    </span>
+                                                </button>
+                                            </div>
                                         </form>
+                                        <div id="newsletterMessage" class="newsletter-message" style="display: none;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -460,6 +468,162 @@ try {
     <script src="{{ asset('styles/js/jquery.magnific-popup.min.js') }}"></script>
     <script src="{{ asset('styles/js/plugins.js') }}"></script>
     <script src="{{ asset('styles/js/main.js') }}"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Newsletter Footer Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('footerNewsletterForm');
+        const messageDiv = document.getElementById('newsletterMessage');
+        const btnText = form.querySelector('.btn-text');
+        const btnLoading = form.querySelector('.btn-loading');
+
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Show loading state
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline';
+                messageDiv.style.display = 'none';
+
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Reset loading state
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+
+                    // Show popup based on response type
+                    if (data.success) {
+                        let icon = 'success';
+                        let title = 'Inscription réussie !';
+
+                        if (data.type === 'premium_subscribed') {
+                            icon = 'success';
+                            title = 'Abonnement Premium activé !';
+                        } else if (data.type === 'reactivated') {
+                            icon = 'info';
+                            title = 'Abonnement réactivé !';
+                        }
+
+                        Swal.fire({
+                            icon: icon,
+                            title: title,
+                            text: data.message,
+                            confirmButtonText: 'Parfait !',
+                            confirmButtonColor: '#F2CB05',
+                            timer: 6000,
+                            timerProgressBar: true,
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            }
+                        });
+
+                        form.reset();
+                    } else {
+                        let icon = 'warning';
+                        let title = 'Information';
+
+                        if (data.type === 'already_subscribed') {
+                            icon = 'info';
+                            title = 'Déjà abonné(e)';
+                        } else if (data.type === 'server_error') {
+                            icon = 'error';
+                            title = 'Erreur technique';
+                        }
+
+                        Swal.fire({
+                            icon: icon,
+                            title: title,
+                            text: data.message,
+                            confirmButtonText: 'Compris',
+                            confirmButtonColor: '#6c757d',
+                            timer: 5000,
+                            timerProgressBar: true
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur de connexion',
+                        text: 'Une erreur est survenue. Vérifiez votre connexion internet et réessayez.',
+                        confirmButtonText: 'Réessayer',
+                        confirmButtonColor: '#dc3545'
+                    });
+                });
+            });
+        }
+    });
+    </script>
+
+    <style>
+    .form-group-inline {
+        display: flex;
+        align-items: center;
+        gap: 0;
+    }
+
+    .form-group-inline input[type="email"] {
+        flex: 1;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-right: none;
+    }
+
+    .form-group-inline button {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        white-space: nowrap;
+    }
+
+    .newsletter-message {
+        margin-top: 15px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .newsletter-message.success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .newsletter-message.error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .btn-loading {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    </style>
 
     <!-- Particles.js Scripts for Animated Banner -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>

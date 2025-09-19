@@ -30,7 +30,7 @@
             </div>
             <div class="col-lg-4">
                 <div class="newsletter-form-wrapper">
-                    <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST">
+                    <form class="newsletter-form" action="{{ route('newsletter.subscribe') }}" method="POST" id="magazineNewsletterForm">
                         @csrf
                         <input type="hidden" name="source" value="magazines">
                         <div class="form-group mb-3">
@@ -47,7 +47,12 @@
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="fas fa-envelope me-2"></i>S'abonner maintenant
+                            <span class="btn-text">
+                                <i class="fas fa-envelope me-2"></i>S'abonner maintenant
+                            </span>
+                            <span class="btn-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin me-2"></i>Envoi...
+                            </span>
                         </button>
                         <small class="text-muted d-block text-center mt-2">
                             <i class="fas fa-shield-alt me-1"></i>
@@ -185,3 +190,106 @@
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('magazineNewsletterForm');
+
+    if (form) {
+        const btnText = form.querySelector('.btn-text');
+        const btnLoading = form.querySelector('.btn-loading');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Show loading state
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline';
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Reset loading state
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+
+                // Show popup based on response type
+                if (data.success) {
+                    let icon = 'success';
+                    let title = 'Inscription réussie !';
+
+                    if (data.type === 'premium_subscribed') {
+                        icon = 'success';
+                        title = 'Abonnement Premium activé !';
+                    } else if (data.type === 'reactivated') {
+                        icon = 'info';
+                        title = 'Abonnement réactivé !';
+                    }
+
+                    Swal.fire({
+                        icon: icon,
+                        title: title,
+                        text: data.message,
+                        confirmButtonText: 'Parfait !',
+                        confirmButtonColor: '#F2CB05',
+                        timer: 6000,
+                        timerProgressBar: true,
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    });
+
+                    form.reset();
+                } else {
+                    let icon = 'warning';
+                    let title = 'Information';
+
+                    if (data.type === 'already_subscribed') {
+                        icon = 'info';
+                        title = 'Déjà abonné(e)';
+                    } else if (data.type === 'server_error') {
+                        icon = 'error';
+                        title = 'Erreur technique';
+                    }
+
+                    Swal.fire({
+                        icon: icon,
+                        title: title,
+                        text: data.message,
+                        confirmButtonText: 'Compris',
+                        confirmButtonColor: '#6c757d',
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur de connexion',
+                    text: 'Une erreur est survenue. Vérifiez votre connexion internet et réessayez.',
+                    confirmButtonText: 'Réessayer',
+                    confirmButtonColor: '#dc3545'
+                });
+            });
+        });
+    }
+});
+</script>
