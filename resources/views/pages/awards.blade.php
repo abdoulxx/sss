@@ -80,7 +80,7 @@
                         </div>
                         <h5 class="card-title">Prix Impact Féminin</h5>
                         <p class="card-text">Dédié au projet ayant eu le plus grand impact positif sur sa communauté ou sur l'environnement.</p>
-                        <a href="#" class="btn btn-primary-gold mt-3">Découvrez</a>
+                        <a href="{{ route('impact-feminin.index') }}" class="btn btn-primary-gold mt-3">Découvrez</a>
                     </div>
                 </div>
             </div>

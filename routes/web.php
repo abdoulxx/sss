@@ -140,6 +140,25 @@ Route::prefix('pages')->name('pages.')->group(function () {
     Route::get('/terms', function () { return view('pages.terms'); })->name('terms');
 });
 
+// Impact Féminin routes
+Route::prefix('impact-feminin')->name('impact-feminin.')->group(function () {
+    Route::get('/', function () {
+        return view('impact-feminin.event');
+    })->name('index');
+
+    Route::get('/candidature', function () {
+        return view('impact-feminin.candidature');
+    })->name('candidature');
+
+    Route::post('/candidature', [PageController::class, 'storeImpactFemininCandidature'])->name('candidature.store');
+
+    Route::get('/reservation', function () {
+        return view('impact-feminin.reservation');
+    })->name('reservation');
+
+    Route::post('/reservation', [PageController::class, 'storeImpactFemininReservation'])->name('reservation.store');
+});
+
 // Articles routes
 Route::prefix('articles')->name('articles.')->group(function () {
     Route::get('/', function () {
