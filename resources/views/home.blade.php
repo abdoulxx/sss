@@ -343,6 +343,43 @@
         width: 65%;
         border-radius: 4px;
         overflow: hidden;
+        position: relative;
+        animation: sectionGlow 4s ease-in-out infinite;
+    }
+
+    .breaking__ticker-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg,
+            rgba(220, 53, 69, 0.1) 0%,
+            rgba(255, 107, 107, 0.15) 50%,
+            rgba(220, 53, 69, 0.1) 100%);
+        opacity: 0;
+        animation: backgroundFlash 3s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    @keyframes sectionGlow {
+        0%, 100% {
+            box-shadow: 0 0 5px rgba(220, 53, 69, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 20px rgba(220, 53, 69, 0.6);
+        }
+    }
+
+    @keyframes backgroundFlash {
+        0%, 100% {
+            opacity: 0;
+        }
+        50% {
+            opacity: 1;
+        }
     }
     .ticker__label {
         background: #f1c40f;
@@ -373,15 +410,6 @@
         animation: flashBorderPulse 1.5s ease-in-out infinite;
     }
 
-    .ticker__label::after {
-        content: '🔴';
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        font-size: 12px;
-        animation: redDotBlink 1s ease-in-out infinite;
-        filter: drop-shadow(0 0 3px rgba(220, 53, 69, 0.8));
-    }
 
     @keyframes flashLabelPulse {
         0%, 100% {
@@ -405,16 +433,6 @@
         }
     }
 
-    @keyframes redDotBlink {
-        0%, 100% {
-            opacity: 1;
-            transform: scale(1);
-        }
-        50% {
-            opacity: 0.3;
-            transform: scale(1.2);
-        }
-    }
     .ticker__content {
         overflow: hidden;
         position: relative;
@@ -422,6 +440,7 @@
         height: 40px;
         display: flex;
         align-items: center;
+        z-index: 2;
     }
     .ticker__content ul {
         margin: 0;
@@ -430,44 +449,89 @@
         height: 100%;
         width: 100%;
     }
-    .ticker__content ul li {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        transform: translateY(-50%);
-        padding: 0 1rem;
-        font-size: 0.9rem;
-        color: #333;
-        font-weight: 500;
+    .ticker__content ul {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        animation: scrollHorizontal 20s linear infinite;
         white-space: nowrap;
-        opacity: 0;
-        z-index: 1;
     }
 
-    /* Animation dynamique générée par JavaScript */
-    @keyframes flashInfoFadeIn {
+    .ticker__content ul li {
+        display: inline-block;
+        position: relative;
+        opacity: 1;
+        padding: 0 1rem 0 2.5rem;
+        font-size: 0.9rem;
+        line-height: 40px;
+        white-space: nowrap;
+        color: #333;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .ticker__content ul li::before {
+        content: '🚨';
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+        animation: urgentIconBlink 0.8s ease-in-out infinite;
+        filter: drop-shadow(0 0 2px rgba(220, 53, 69, 0.6));
+    }
+
+    .ticker__content ul li::after {
+        content: " • ";
+        color: #f1c40f;
+        margin-left: 1rem;
+        font-weight: bold;
+    }
+
+    .ticker__content ul li:last-child::after {
+        content: "";
+    }
+
+    .ticker__content ul li strong {
+        background: linear-gradient(90deg, #dc3545, #ff6b6b, #dc3545);
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: redTextFlow 3s ease-in-out infinite;
+        font-weight: 700;
+    }
+
+    @keyframes scrollHorizontal {
         0% {
-            opacity: 0;
-            transform: translateY(-100%);
-        }
-        5% {
-            opacity: 1;
-            transform: translateY(-50%);
-        }
-        20% {
-            opacity: 1;
-            transform: translateY(-50%);
-        }
-        25% {
-            opacity: 0;
-            transform: translateY(100%);
+            transform: translateX(100%);
         }
         100% {
-            opacity: 0;
-            transform: translateY(100%);
+            transform: translateX(-100%);
         }
     }
+
+    @keyframes urgentIconBlink {
+        0%, 100% {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+        50% {
+            opacity: 0.4;
+            transform: translateY(-50%) scale(1.1);
+        }
+    }
+
+    @keyframes redTextFlow {
+        0%, 100% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+    }
+
 
     /* Informations statiques à droite */
     .breaking__static-info {
@@ -590,6 +654,12 @@
         flex-shrink: 0;
         }
 
+        @media (max-width: 768px) {
+            .red-dot-divider {
+                display: none;
+            }
+        }
+
         @keyframes pulse-red-dot {
         0% { transform: scale(1); }
         50% { transform: scale(1.2); opacity: 0.7; }
@@ -598,46 +668,6 @@
 
         .ticker__content {
             height: 35px;
-            overflow: hidden;
-        }
-        .ticker__content ul {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            animation: scrollHorizontal 15s linear infinite;
-            white-space: nowrap;
-        }
-        .ticker__content ul li {
-            display: inline-block !important;
-            position: relative !important;
-            opacity: 1 !important;
-            animation: none !important;
-            padding: 0 1rem !important;
-            font-size: 0.95rem !important;
-            line-height: 35px !important;
-            white-space: nowrap !important;
-            color: #333 !important;
-            font-weight: 600 !important;
-        }
-        .ticker__content ul li::after {
-            content: " • ";
-            color: #f1c40f;
-            margin-left: 0.5rem;
-        }
-        .ticker__content ul li:last-child::after {
-            content: "";
-        }
-        
-
-        /* Animation de défilement horizontal pour mobile */
-        @keyframes scrollHorizontal {
-            0% {
-                transform: translateX(100%);
-            }
-            100% {
-                transform: translateX(-100%);
-            }
         }
     }
     @media (max-width: 480px) {
@@ -678,7 +708,7 @@
                             <!-- Section "Flash Info" avec ticker -->
                             <div class="breaking__ticker-section">
                                 <div class="ticker__label">
-                                    <i class="fas fa-bolt"></i> FLASH INFO
+                                    <i class="fas fa-bolt"></i>&nbsp;&nbsp;FLASH INFO
                                 </div>
                                 <span class="red-dot-divider"></span>
                                 <div class="ticker__content">
@@ -1000,44 +1030,8 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- Ticker Animation ---
-        const tickerList = document.querySelector('.ticker__content ul');
-        if (tickerList) {
-            const flashInfoItems = tickerList.querySelectorAll('li');
-            const totalItems = flashInfoItems.length;
-            const isMobile = window.innerWidth <= 768;
-
-            console.log(`Flash Info: ${totalItems} éléments détectés, Mobile: ${isMobile}`);
-
-            if (totalItems > 0) {
-                if (!isMobile) {
-                    // Animation verticale pour desktop
-                    const displayTime = 6; // Temps d'affichage par Flash Info (secondes)
-                    const totalCycleTime = totalItems * displayTime; // Durée totale du cycle complet
-
-                    flashInfoItems.forEach((item, index) => {
-                        // Chaque Flash Info a une animation qui dure le cycle complet
-                        item.style.animation = `flashInfoFadeIn ${totalCycleTime}s infinite`;
-                        item.style.animationDelay = `${index * displayTime}s`;
-
-                        // Positionnement pour desktop
-                        item.style.position = 'absolute';
-                        item.style.top = '50%';
-                        item.style.left = '0';
-                        item.style.right = '0';
-                        item.style.transform = 'translateY(-50%)';
-                        item.style.textAlign = 'left';
-                        item.style.paddingLeft = '1rem';
-                        item.style.paddingRight = '1rem';
-
-                        console.log(`Flash Info ${index + 1}: délai de ${index * displayTime}s, durée totale: ${totalCycleTime}s`);
-                    });
-
-                    console.log(`Animation configurée: cycle complet de ${totalCycleTime}s pour ${totalItems} éléments`);
-                }
-                // En mobile, laisser le CSS gérer le défilement horizontal
-            }
-        }
+        // --- Flash Info Ticker ---
+        // Animation défilement horizontal automatique géré par CSS
 
         // --- Weather Data ---
         function fetchWeather() {
