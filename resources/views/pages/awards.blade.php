@@ -65,8 +65,8 @@
                             <i class="fas fa-trophy fa-3x text-warning"></i>
                         </div>
                         <h5 class="card-title">Prix d'Excellence International</h5>
-                        <p class="card-text">Récompense l'entreprise qui a introduit une technologie ou un modèle économique révolutionnaire.</p>
-                        <a href="#" class="btn btn-primary-gold mt-3">Découvrez</a>
+                        <p class="card-text">Participez aux Rencontres Internationales B2B 2026 dans 6 destinations stratégiques.</p>
+                        <a href="{{ route('rencontre-2026.index') }}" class="btn btn-primary-gold mt-3">Découvrez</a>
                     </div>
                 </div>
             </div>

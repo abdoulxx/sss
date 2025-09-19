@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\RencontreController;
 
 //======================================================================
 // PUBLIC ROUTES
@@ -157,6 +158,13 @@ Route::prefix('impact-feminin')->name('impact-feminin.')->group(function () {
     })->name('reservation');
 
     Route::post('/reservation', [PageController::class, 'storeImpactFemininReservation'])->name('reservation.store');
+});
+
+// Rencontres Internationales 2026 routes
+Route::prefix('rencontre-2026')->name('rencontre-2026.')->group(function () {
+    Route::get('/', [RencontreController::class, 'index'])->name('index');
+    Route::get('/inscription', [RencontreController::class, 'inscription'])->name('inscription');
+    Route::post('/inscription', [RencontreController::class, 'storeInscription'])->name('inscription.store');
 });
 
 // Articles routes
