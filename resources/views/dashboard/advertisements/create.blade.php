@@ -171,7 +171,7 @@
                                                     id="position_in_page" name="position_in_page" required>
                                                 <option value="">Sélectionnez la position...</option>
                                                 <option value="top_banner" {{ old('position_in_page') == 'top_banner' ? 'selected' : '' }}>
-                                                    Bannière haute (près du menu) - 730x90px
+                                                    Bannière haute (près du menu) - 785x193px
                                                 </option>
                                                 <option value="sidebar" {{ old('position_in_page') == 'sidebar' ? 'selected' : '' }}>
                                                     Barre latérale - 300x250px
@@ -495,7 +495,7 @@ document.getElementById('position_in_page').addEventListener('change', function(
         previewBox.className = 'preview-box preview-' + position.replace('_', '-');
         
         const dimensions = {
-            'top_banner': '730x90px',
+            'top_banner': '785x193px',
             'sidebar': '300x250px',
             'middle': '728x90px',
             'bottom': '970x250px'

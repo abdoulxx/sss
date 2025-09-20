@@ -221,7 +221,7 @@ try {
                                 <a href="{{ $bannerTop->getTrackableUrl() }}" target="_blank" rel="noopener">
                                     <img src="{{ asset('storage/app/public/' . $bannerTop->image) }}"
                                          alt="{{ $bannerTop->title }}"
-                                         style="max-width: 100%; max-height: 120px; width: auto;"
+                                         style="max-width: 785px; height: 193px; width: auto; object-fit: contain;"
                                          data-ad-id="{{ $bannerTop->id }}"
                                          class="advertisement-banner">
                                 </a>
@@ -756,6 +756,147 @@ try {
     </script>
 
     @stack('scripts')
+
+    <!-- WhatsApp Sticky Button -->
+    <div id="whatsapp-sticky" class="whatsapp-sticky">
+        <a href="https://www.whatsapp.com/channel/0029Vb6I52Z1t90aVemzTe2S" target="_blank" rel="noopener noreferrer" title="Rejoindre notre canal WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+            <span class="whatsapp-text">Rejoindre le canal</span>
+        </a>
+    </div>
+
+    <style>
+        .whatsapp-sticky {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 9999;
+            animation: whatsappPulse 2s infinite;
+        }
+
+        .whatsapp-sticky a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .whatsapp-sticky a:hover {
+            background: linear-gradient(135deg, #20BA5A, #0F7A6B);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-sticky i {
+            font-size: 24px;
+            min-width: 24px;
+        }
+
+        .whatsapp-text {
+            white-space: nowrap;
+        }
+
+        @keyframes whatsappPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 6px 25px rgba(37, 211, 102, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+            }
+        }
+
+        /* Animation de clignotement supplémentaire */
+        .whatsapp-sticky::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            border-radius: 50px;
+            z-index: -1;
+            animation: whatsappGlow 3s infinite;
+            opacity: 0;
+        }
+
+        @keyframes whatsappGlow {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 0.6;
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .whatsapp-sticky {
+                bottom: 20px;
+                left: 20px;
+            }
+
+            .whatsapp-sticky a {
+                padding: 12px 16px;
+                font-size: 14px;
+            }
+
+            .whatsapp-text {
+                display: none;
+            }
+
+            .whatsapp-sticky a {
+                border-radius: 50%;
+                width: 60px;
+                height: 60px;
+                justify-content: center;
+                padding: 0;
+            }
+
+            .whatsapp-sticky i {
+                font-size: 28px;
+            }
+        }
+
+        /* Animation d'entrée */
+        .whatsapp-sticky {
+            animation: whatsappSlideIn 1s ease-out, whatsappPulse 2s infinite 1s;
+        }
+
+        @keyframes whatsappSlideIn {
+            0% {
+                transform: translateX(-100px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+
 </body>
 
 </html>
