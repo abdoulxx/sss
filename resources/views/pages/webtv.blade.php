@@ -594,5 +594,27 @@
     });
 </script>
 @endpush
+
+    <!-- ============================================================== -->
+    <!-- Section Publicitaire Avant Footer -->
+    <!-- ============================================================== -->
+    @if(isset($webtvBeforeFooterAd) && $webtvBeforeFooterAd)
+    <section class="advertisement-before-footer py-4">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 text-center">
+                    <a href="{{ $webtvBeforeFooterAd->getTrackableUrl() }}" target="_blank" rel="noopener">
+                        <img src="{{ asset('storage/app/public/' . $webtvBeforeFooterAd->image) }}"
+                             alt="{{ $webtvBeforeFooterAd->title }}"
+                             style="max-width: 785px; height: 193px; width: auto; object-fit: contain;"
+                             data-ad-id="{{ $webtvBeforeFooterAd->id }}"
+                             class="advertisement-banner img-fluid">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    @endif
+
 </main>
 @endsection

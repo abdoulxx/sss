@@ -12,7 +12,6 @@ class Advertisement extends Model
         'image',
         'url',
         'page_type',
-        'category_slug',
         'position_in_page',
         'status',
         'click_count',
@@ -39,15 +38,11 @@ class Advertisement extends Model
     public function scopeForPosition($query, $pageType, $categorySlug = null, $position = null)
     {
         $query = $query->where('page_type', $pageType);
-        
-        if ($categorySlug) {
-            $query->where('category_slug', $categorySlug);
-        }
-        
+
         if ($position) {
             $query->where('position_in_page', $position);
         }
-        
+
         return $query->orderBy('priority', 'desc')
                     ->orderBy('created_at', 'desc');
     }

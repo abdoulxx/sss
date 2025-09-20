@@ -114,40 +114,18 @@
                                 
                                 <div class="mb-3">
                                     <label for="page_type" class="form-label">Type de page *</label>
-                                    <select class="form-select @error('page_type') is-invalid @enderror" 
+                                    <select class="form-select @error('page_type') is-invalid @enderror"
                                             id="page_type" name="page_type" required>
                                         <option value="">Sélectionnez le type de page...</option>
-                                        <option value="home" {{ old('page_type') == 'home' ? 'selected' : '' }}>Accueil</option>
-                                        <option value="category" {{ old('page_type') == 'category' ? 'selected' : '' }}>Pages de catégories</option>
+                                        <option value="home" {{ old('page_type') == 'home' ? 'selected' : '' }}>Page d'accueil</option>
                                         <option value="article" {{ old('page_type') == 'article' ? 'selected' : '' }}>Pages d'articles</option>
-                                        <option value="magazines" {{ old('page_type') == 'magazines' ? 'selected' : '' }}>Pages magazines</option>
-                                        <option value="webtv" {{ old('page_type') == 'webtv' ? 'selected' : '' }}>Pages Web TV</option>
+                                        <option value="webtv" {{ old('page_type') == 'webtv' ? 'selected' : '' }}>Pages WebTV</option>
                                     </select>
                                     @error('page_type')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
-                                <!-- Catégories principales -->
-                                <div class="mb-3 d-none" id="main_category_section">
-                                    <label for="main_category" class="form-label">Catégorie principale *</label>
-                                    <select class="form-select" id="main_category" name="main_category">
-                                        <option value="">Toutes les catégories</option>
-                                        <option value="economie-reelle">Économie Réelle</option>
-                                        <option value="portraits">Portraits</option>
-                                        <option value="analyses-experts">Analyses & Experts</option>
-                                        <option value="diaspora">Diaspora</option>
-                                    </select>
-                                </div>
-
-                                <!-- Sous-catégories -->
-                                <div class="mb-3 d-none" id="subcategory_section">
-                                    <label for="category_slug" class="form-label">Sous-catégorie spécifique</label>
-                                    <select class="form-select" id="category_slug" name="category_slug">
-                                        <option value="">Toutes les sous-catégories</option>
-                                    </select>
-                                    <div class="form-text">Laissez vide pour afficher sur toutes les sous-catégories de la catégorie principale</div>
-                                </div>
 
                                 <div class="d-flex justify-content-between">
                                     <button type="button" class="btn btn-secondary" onclick="prevStep(1)">
@@ -167,20 +145,23 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="position_in_page" class="form-label">Position sur la page *</label>
-                                            <select class="form-select @error('position_in_page') is-invalid @enderror" 
+                                            <select class="form-select @error('position_in_page') is-invalid @enderror"
                                                     id="position_in_page" name="position_in_page" required>
                                                 <option value="">Sélectionnez la position...</option>
-                                                <option value="top_banner" {{ old('position_in_page') == 'top_banner' ? 'selected' : '' }}>
-                                                    Bannière haute (près du menu) - 785x193px
+                                                <!-- Options pour la page d'accueil -->
+                                                <option value="home_top_banner" data-page="home" {{ old('position_in_page') == 'home_top_banner' ? 'selected' : '' }}>
+                                                    Accueil - Bannière haute - 785×193px
                                                 </option>
-                                                <option value="sidebar" {{ old('position_in_page') == 'sidebar' ? 'selected' : '' }}>
-                                                    Barre latérale - 300x250px
+                                                <option value="home_middle_section" data-page="home" {{ old('position_in_page') == 'home_middle_section' ? 'selected' : '' }}>
+                                                    Accueil - Entre articles et portraits - 785×193px
                                                 </option>
-                                                <option value="middle" {{ old('position_in_page') == 'middle' ? 'selected' : '' }}>
-                                                    Milieu de page - 728x90px
+                                                <!-- Option pour les pages d'articles -->
+                                                <option value="article_sidebar" data-page="article" {{ old('position_in_page') == 'article_sidebar' ? 'selected' : '' }}>
+                                                    Article - Sidebar - 401×613px
                                                 </option>
-                                                <option value="bottom" {{ old('position_in_page') == 'bottom' ? 'selected' : '' }}>
-                                                    Bas de page - 970x250px
+                                                <!-- Option pour les pages WebTV -->
+                                                <option value="webtv_before_footer" data-page="webtv" {{ old('position_in_page') == 'webtv_before_footer' ? 'selected' : '' }}>
+                                                    WebTV - Avant footer - 785×193px
                                                 </option>
                                             </select>
                                             @error('position_in_page')
@@ -457,31 +438,23 @@ function validateAllSteps() {
 // Gestion du changement de type de page
 document.getElementById('page_type').addEventListener('change', function() {
     const pageType = this.value;
-    const mainCategorySection = document.getElementById('main_category_section');
-    const subcategorySection = document.getElementById('subcategory_section');
-    
-    if (pageType === 'category') {
-        mainCategorySection.classList.remove('d-none');
-    } else {
-        mainCategorySection.classList.add('d-none');
-        subcategorySection.classList.add('d-none');
-    }
+    const positionSelect = document.getElementById('position_in_page');
+
+    // Filtrer les options de position selon le type de page
+    const allOptions = positionSelect.querySelectorAll('option[data-page]');
+    allOptions.forEach(option => {
+        if (pageType && option.dataset.page === pageType) {
+            option.style.display = 'block';
+        } else {
+            option.style.display = 'none';
+        }
+    });
+
+    // Réinitialiser la sélection de position
+    positionSelect.value = '';
+    document.getElementById('position_preview').classList.add('d-none');
 });
 
-// Gestion du changement de catégorie principale
-document.getElementById('main_category').addEventListener('change', function() {
-    const mainCategory = this.value;
-    const subcategorySection = document.getElementById('subcategory_section');
-    const subcategorySelect = document.getElementById('category_slug');
-    
-    if (mainCategory) {
-        subcategorySection.classList.remove('d-none');
-        loadSubcategories(mainCategory);
-    } else {
-        subcategorySection.classList.add('d-none');
-        subcategorySelect.innerHTML = '<option value="">Toutes les sous-catégories</option>';
-    }
-});
 
 // Gestion de l'aperçu de position
 document.getElementById('position_in_page').addEventListener('change', function() {
@@ -495,10 +468,10 @@ document.getElementById('position_in_page').addEventListener('change', function(
         previewBox.className = 'preview-box preview-' + position.replace('_', '-');
         
         const dimensions = {
-            'top_banner': '785x193px',
-            'sidebar': '300x250px',
-            'middle': '728x90px',
-            'bottom': '970x250px'
+            'home_top_banner': '785×193px',
+            'home_middle_section': '785×193px',
+            'article_sidebar': '401×613px',
+            'webtv_before_footer': '785×193px'
         };
         
         previewText.textContent = dimensions[position] || 'Aperçu';
@@ -507,30 +480,6 @@ document.getElementById('position_in_page').addEventListener('change', function(
     }
 });
 
-function loadSubcategories(mainCategory) {
-    const subcategorySelect = document.getElementById('category_slug');
-    
-    // Mapping des catégories principales vers leurs slugs
-    const categoryMappings = {
-        'economie-reelle': ['grands-genres', 'entreprises-impacts', 'contributions-analyses'],
-        'portraits': ['figures-de-leconomie', 'portrait-entreprise', 'portrait-entrepreneur'],
-        'analyses-experts': ['parole-experts'],
-        'diaspora': ['opportunites', 'startups-diaspora']
-    };
-    
-    const subcategories = categoryMappings[mainCategory] || [];
-    
-    // Clear existing options
-    subcategorySelect.innerHTML = '<option value="">Toutes les sous-catégories</option>';
-    
-    // Add new options
-    subcategories.forEach(slug => {
-        const option = document.createElement('option');
-        option.value = slug;
-        option.textContent = slug.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        subcategorySelect.appendChild(option);
-    });
-}
 
 // Définir les dates par défaut
 document.addEventListener('DOMContentLoaded', function() {

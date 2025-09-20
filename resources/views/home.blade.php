@@ -927,6 +927,27 @@
         </section>
         <!-- news area end -->
 
+        <!-- ============================================================== -->
+        <!-- Section Publicitaire Milieu de Page -->
+        <!-- ============================================================== -->
+        @if(isset($homeMiddleAd) && $homeMiddleAd)
+        <section class="advertisement-middle-section py-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 text-center">
+                        <a href="{{ $homeMiddleAd->getTrackableUrl() }}" target="_blank" rel="noopener">
+                            <img src="{{ asset('storage/app/public/' . $homeMiddleAd->image) }}"
+                                 alt="{{ $homeMiddleAd->title }}"
+                                 style="max-width: 785px; height: 193px; width: auto; object-fit: contain;"
+                                 data-ad-id="{{ $homeMiddleAd->id }}"
+                                 class="advertisement-banner img-fluid">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endif
+
 
 
 

@@ -57,7 +57,22 @@
                                                 </td>
                                                 <td>
                                                     <span class="badge bg-secondary">
-                                                        {{ str_replace('_', ' ', ucfirst($ad->position_in_page)) }}
+                                                        @switch($ad->position_in_page)
+                                                            @case('home_top_banner')
+                                                                Accueil - Bannière haute
+                                                                @break
+                                                            @case('home_middle_section')
+                                                                Accueil - Entre articles
+                                                                @break
+                                                            @case('article_sidebar')
+                                                                Article - Sidebar
+                                                                @break
+                                                            @case('webtv_before_footer')
+                                                                WebTV - Avant footer
+                                                                @break
+                                                            @default
+                                                                {{ str_replace('_', ' ', ucfirst($ad->position_in_page)) }}
+                                                        @endswitch
                                                     </span>
                                                 </td>
                                                 <td>

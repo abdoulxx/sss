@@ -81,6 +81,19 @@
 
             <!-- Barre latérale -->
             <div class="col-lg-4">
+                <!-- Zone publicitaire sidebar -->
+                @if(isset($articleSidebarAd) && $articleSidebarAd)
+                <div class="advertisement-sidebar mb-4">
+                    <a href="{{ $articleSidebarAd->getTrackableUrl() }}" target="_blank" rel="noopener">
+                        <img src="{{ asset('storage/app/public/' . $articleSidebarAd->image) }}"
+                             alt="{{ $articleSidebarAd->title }}"
+                             style="width: 401px; height: 613px; max-width: 100%; object-fit: contain;"
+                             data-ad-id="{{ $articleSidebarAd->id }}"
+                             class="advertisement-banner img-fluid">
+                    </a>
+                </div>
+                @endif
+
                 <!-- Widget de recherche -->
                 <div class="card mb-4">
                     <div class="card-header">Recherche</div>

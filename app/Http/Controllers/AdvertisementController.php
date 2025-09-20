@@ -77,9 +77,8 @@ class AdvertisementController extends Controller
                 'title' => 'required|string|max:255',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'url' => 'required|url|max:500',
-                'page_type' => 'required|string',
-                'category_slug' => 'nullable|string',
-                'position_in_page' => 'required|string',
+                'page_type' => 'required|in:home,article,webtv',
+                'position_in_page' => 'required|in:home_top_banner,home_middle_section,article_sidebar,webtv_before_footer',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after:start_date',
                 'priority' => 'nullable|integer|min:1|max:10'
@@ -93,7 +92,6 @@ class AdvertisementController extends Controller
                 'image' => $imagePath,
                 'url' => $request->url,
                 'page_type' => $request->page_type,
-                'category_slug' => $request->category_slug,
                 'position_in_page' => $request->position_in_page,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
@@ -141,9 +139,8 @@ class AdvertisementController extends Controller
             'title' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'url' => 'required|url|max:500',
-            'page_type' => 'required|string',
-            'category_slug' => 'nullable|string',
-            'position_in_page' => 'required|string',
+            'page_type' => 'required|in:home,article,webtv',
+            'position_in_page' => 'required|in:home_top_banner,home_middle_section,article_sidebar,webtv_before_footer',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
             'priority' => 'nullable|integer|min:1|max:10',
@@ -154,7 +151,6 @@ class AdvertisementController extends Controller
             'title' => $request->title,
             'url' => $request->url,
             'page_type' => $request->page_type,
-            'category_slug' => $request->category_slug,
             'position_in_page' => $request->position_in_page,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
@@ -315,13 +311,13 @@ class AdvertisementController extends Controller
     private function getImageDimensions($position)
     {
         $dimensions = [
-            'top_banner' => ['width' => 785, 'height' => 193],
-            'sidebar' => ['width' => 300, 'height' => 250],
-            'middle' => ['width' => 728, 'height' => 90],
-            'bottom' => ['width' => 970, 'height' => 250]
+            'home_top_banner' => ['width' => 785, 'height' => 193],
+            'home_middle_section' => ['width' => 785, 'height' => 193],
+            'article_sidebar' => ['width' => 401, 'height' => 613],
+            'webtv_before_footer' => ['width' => 785, 'height' => 193]
         ];
-        
-        return $dimensions[$position] ?? $dimensions['sidebar'];
+
+        return $dimensions[$position] ?? $dimensions['home_top_banner'];
     }
 
     /**

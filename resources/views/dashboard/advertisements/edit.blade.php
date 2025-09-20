@@ -88,13 +88,11 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="page_type" class="form-label">Type de page *</label>
-                                        <select class="form-select @error('page_type') is-invalid @enderror" 
+                                        <select class="form-select @error('page_type') is-invalid @enderror"
                                                 id="page_type" name="page_type" required>
-                                            <option value="home" {{ old('page_type', $advertisement->page_type) == 'home' ? 'selected' : '' }}>Accueil</option>
-                                            <option value="category" {{ old('page_type', $advertisement->page_type) == 'category' ? 'selected' : '' }}>Pages de catégories</option>
+                                            <option value="home" {{ old('page_type', $advertisement->page_type) == 'home' ? 'selected' : '' }}>Page d'accueil</option>
                                             <option value="article" {{ old('page_type', $advertisement->page_type) == 'article' ? 'selected' : '' }}>Pages d'articles</option>
-                                            <option value="magazines" {{ old('page_type', $advertisement->page_type) == 'magazines' ? 'selected' : '' }}>Pages magazines</option>
-                                            <option value="webtv" {{ old('page_type', $advertisement->page_type) == 'webtv' ? 'selected' : '' }}>Pages Web TV</option>
+                                            <option value="webtv" {{ old('page_type', $advertisement->page_type) == 'webtv' ? 'selected' : '' }}>Pages WebTV</option>
                                         </select>
                                         @error('page_type')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -121,19 +119,19 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="position_in_page" class="form-label">Position sur la page *</label>
-                                        <select class="form-select @error('position_in_page') is-invalid @enderror" 
+                                        <select class="form-select @error('position_in_page') is-invalid @enderror"
                                                 id="position_in_page" name="position_in_page" required>
-                                            <option value="top_banner" {{ old('position_in_page', $advertisement->position_in_page) == 'top_banner' ? 'selected' : '' }}>
-                                                Bannière haute (785x193px)
+                                            <option value="home_top_banner" {{ old('position_in_page', $advertisement->position_in_page) == 'home_top_banner' ? 'selected' : '' }}>
+                                                Accueil - Bannière haute - 785×193px
                                             </option>
-                                            <option value="sidebar" {{ old('position_in_page', $advertisement->position_in_page) == 'sidebar' ? 'selected' : '' }}>
-                                                Barre latérale (300x250px)
+                                            <option value="home_middle_section" {{ old('position_in_page', $advertisement->position_in_page) == 'home_middle_section' ? 'selected' : '' }}>
+                                                Accueil - Entre articles et portraits - 785×193px
                                             </option>
-                                            <option value="middle" {{ old('position_in_page', $advertisement->position_in_page) == 'middle' ? 'selected' : '' }}>
-                                                Milieu de page (728x90px)
+                                            <option value="article_sidebar" {{ old('position_in_page', $advertisement->position_in_page) == 'article_sidebar' ? 'selected' : '' }}>
+                                                Article - Sidebar - 401×613px
                                             </option>
-                                            <option value="bottom" {{ old('position_in_page', $advertisement->position_in_page) == 'bottom' ? 'selected' : '' }}>
-                                                Bas de page (970x250px)
+                                            <option value="webtv_before_footer" {{ old('position_in_page', $advertisement->position_in_page) == 'webtv_before_footer' ? 'selected' : '' }}>
+                                                WebTV - Avant footer - 785×193px
                                             </option>
                                         </select>
                                         @error('position_in_page')
@@ -231,10 +229,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateDimensionsPreview() {
         const position = positionSelect.value;
         const dimensions = {
-            'top_banner': '785x193px',
-            'sidebar': '300x250px',
-            'middle': '728x90px',
-            'bottom': '970x250px'
+            'home_top_banner': '785×193px',
+            'home_middle_section': '785×193px',
+            'article_sidebar': '401×613px',
+            'webtv_before_footer': '785×193px'
         };
         
         // Trouver ou créer l'élément d'aperçu
