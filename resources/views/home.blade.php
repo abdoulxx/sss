@@ -466,7 +466,7 @@
         font-size: 0.9rem;
         line-height: 40px;
         white-space: nowrap;
-        color: #333;
+        color: #000;
         font-weight: 600;
         flex-shrink: 0;
     }
@@ -494,12 +494,7 @@
     }
 
     .ticker__content ul li strong {
-        background: linear-gradient(90deg, #dc3545, #ff6b6b, #dc3545);
-        background-size: 200% 100%;
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: redTextFlow 3s ease-in-out infinite;
+        color: #000;
         font-weight: 700;
     }
 
@@ -523,14 +518,6 @@
         }
     }
 
-    @keyframes redTextFlow {
-        0%, 100% {
-            background-position: 0% 50%;
-        }
-        50% {
-            background-position: 100% 50%;
-        }
-    }
 
 
     /* Informations statiques à droite */
@@ -668,6 +655,14 @@
 
         .ticker__content {
             height: 35px;
+        }
+
+        .ticker__content ul li {
+            padding: 0 1rem 0 3rem !important;
+        }
+
+        .ticker__content ul li::before {
+            left: 0px !important;
         }
     }
     @media (max-width: 480px) {
