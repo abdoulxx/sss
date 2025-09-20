@@ -312,9 +312,9 @@ class AdvertisementController extends Controller
     {
         $dimensions = [
             'home_top_banner' => ['width' => 785, 'height' => 193],
-            'home_middle_section' => ['width' => 785, 'height' => 193],
+            'home_middle_section' => ['width' => 1166, 'height' => 247],
             'article_sidebar' => ['width' => 401, 'height' => 613],
-            'webtv_before_footer' => ['width' => 785, 'height' => 193]
+            'webtv_before_footer' => ['width' => 1166, 'height' => 247]
         ];
 
         return $dimensions[$position] ?? $dimensions['home_top_banner'];

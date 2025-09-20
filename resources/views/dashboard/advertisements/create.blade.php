@@ -153,7 +153,7 @@
                                                     Accueil - Bannière haute - 785×193px
                                                 </option>
                                                 <option value="home_middle_section" data-page="home" {{ old('position_in_page') == 'home_middle_section' ? 'selected' : '' }}>
-                                                    Accueil - Entre articles et portraits - 785×193px
+                                                    Accueil - Entre articles et portraits - 1166×247px
                                                 </option>
                                                 <!-- Option pour les pages d'articles -->
                                                 <option value="article_sidebar" data-page="article" {{ old('position_in_page') == 'article_sidebar' ? 'selected' : '' }}>
@@ -161,7 +161,7 @@
                                                 </option>
                                                 <!-- Option pour les pages WebTV -->
                                                 <option value="webtv_before_footer" data-page="webtv" {{ old('position_in_page') == 'webtv_before_footer' ? 'selected' : '' }}>
-                                                    WebTV - Avant footer - 785×193px
+                                                    WebTV - Avant footer - 1166×247px
                                                 </option>
                                             </select>
                                             @error('position_in_page')
@@ -469,9 +469,9 @@ document.getElementById('position_in_page').addEventListener('change', function(
         
         const dimensions = {
             'home_top_banner': '785×193px',
-            'home_middle_section': '785×193px',
+            'home_middle_section': '1166×247px',
             'article_sidebar': '401×613px',
-            'webtv_before_footer': '785×193px'
+            'webtv_before_footer': '1166×247px'
         };
         
         previewText.textContent = dimensions[position] || 'Aperçu';

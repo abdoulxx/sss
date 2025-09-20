@@ -938,7 +938,7 @@
                         <a href="{{ $homeMiddleAd->getTrackableUrl() }}" target="_blank" rel="noopener">
                             <img src="{{ asset('storage/app/public/' . $homeMiddleAd->image) }}"
                                  alt="{{ $homeMiddleAd->title }}"
-                                 style="max-width: 785px; height: 193px; width: auto; object-fit: contain;"
+                                 style="max-width: 1166px; height: 247px; width: auto; object-fit: contain;"
                                  data-ad-id="{{ $homeMiddleAd->id }}"
                                  class="advertisement-banner img-fluid">
                         </a>

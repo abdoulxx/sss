@@ -121,17 +121,17 @@
                                         <label for="position_in_page" class="form-label">Position sur la page *</label>
                                         <select class="form-select @error('position_in_page') is-invalid @enderror"
                                                 id="position_in_page" name="position_in_page" required>
-                                            <option value="home_top_banner" {{ old('position_in_page', $advertisement->position_in_page) == 'home_top_banner' ? 'selected' : '' }}>
+                                            <option value="home_top_banner" data-page="home" {{ old('position_in_page', $advertisement->position_in_page) == 'home_top_banner' ? 'selected' : '' }}>
                                                 Accueil - Bannière haute - 785×193px
                                             </option>
-                                            <option value="home_middle_section" {{ old('position_in_page', $advertisement->position_in_page) == 'home_middle_section' ? 'selected' : '' }}>
-                                                Accueil - Entre articles et portraits - 785×193px
+                                            <option value="home_middle_section" data-page="home" {{ old('position_in_page', $advertisement->position_in_page) == 'home_middle_section' ? 'selected' : '' }}>
+                                                Accueil - Entre articles et portraits - 1166×247px
                                             </option>
-                                            <option value="article_sidebar" {{ old('position_in_page', $advertisement->position_in_page) == 'article_sidebar' ? 'selected' : '' }}>
+                                            <option value="article_sidebar" data-page="article" {{ old('position_in_page', $advertisement->position_in_page) == 'article_sidebar' ? 'selected' : '' }}>
                                                 Article - Sidebar - 401×613px
                                             </option>
-                                            <option value="webtv_before_footer" {{ old('position_in_page', $advertisement->position_in_page) == 'webtv_before_footer' ? 'selected' : '' }}>
-                                                WebTV - Avant footer - 785×193px
+                                            <option value="webtv_before_footer" data-page="webtv" {{ old('position_in_page', $advertisement->position_in_page) == 'webtv_before_footer' ? 'selected' : '' }}>
+                                                WebTV - Avant footer - 1166×247px
                                             </option>
                                         </select>
                                         @error('position_in_page')
@@ -230,9 +230,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const position = positionSelect.value;
         const dimensions = {
             'home_top_banner': '785×193px',
-            'home_middle_section': '785×193px',
+            'home_middle_section': '1166×247px',
             'article_sidebar': '401×613px',
-            'webtv_before_footer': '785×193px'
+            'webtv_before_footer': '1166×247px'
         };
         
         // Trouver ou créer l'élément d'aperçu
@@ -257,9 +257,41 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Gestion du changement de type de page pour filtrer les positions
+    const pageTypeSelect = document.getElementById('page_type');
+
+    function filterPositions() {
+        const pageType = pageTypeSelect.value;
+        const allOptions = positionSelect.querySelectorAll('option[data-page]');
+
+        allOptions.forEach(option => {
+            if (pageType && option.dataset.page === pageType) {
+                option.style.display = 'block';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+
+        // Vérifier si la position actuelle est toujours valide
+        const currentPosition = positionSelect.value;
+        const currentOption = positionSelect.querySelector(`option[value="${currentPosition}"]`);
+
+        if (currentOption && currentOption.dataset.page !== pageType) {
+            // Si la position actuelle n'est plus compatible, réinitialiser
+            positionSelect.value = '';
+            updateDimensionsPreview();
+        }
+    }
+
+    // Filtrer les positions au chargement
+    filterPositions();
+
+    // Filtrer les positions quand le type de page change
+    pageTypeSelect.addEventListener('change', filterPositions);
+
     // Mettre à jour l'aperçu au chargement
     updateDimensionsPreview();
-    
+
     // Mettre à jour l'aperçu quand la position change
     positionSelect.addEventListener('change', updateDimensionsPreview);
 });
