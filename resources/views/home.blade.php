@@ -759,7 +759,21 @@
                         <div class="video-player-wrapper">
                             @if($featuredWebtv && $featuredWebtv->statut == 'en_direct' && !empty($featuredWebtv->code_embed_vimeo))
                                 <!-- Live en cours avec code embed -->
-                                {!! $featuredWebtv->code_embed_vimeo !!}
+                                @php
+                                    $embedCode = $featuredWebtv->code_embed_vimeo;
+                                    // Ajouter autoplay=1&muted=1 si pas déjà présent
+                                    if (strpos($embedCode, 'autoplay=1') === false && strpos($embedCode, 'muted=1') === false) {
+                                        // Rechercher l'URL dans l'iframe src
+                                        if (preg_match('/src="([^"]+)"/', $embedCode, $matches)) {
+                                            $url = $matches[1];
+                                            // Ajouter les paramètres
+                                            $separator = strpos($url, '?') !== false ? '&' : '?';
+                                            $newUrl = $url . $separator . 'autoplay=1&muted=1';
+                                            $embedCode = str_replace($url, $newUrl, $embedCode);
+                                        }
+                                    }
+                                @endphp
+                                {!! $embedCode !!}
                             @elseif($featuredWebtv && $featuredWebtv->statut == 'en_direct')
                                 <!-- Live en cours sans code embed -->
                                 <img src="{{ $featuredWebtv->image_path ? asset('storage/app/public/' . $featuredWebtv->image_path) : asset('assets/default/image_default.jpg') }}" alt="{{ $featuredWebtv->titre ?? '' }}" style="width: 100%; height: 100%; object-fit: cover;">

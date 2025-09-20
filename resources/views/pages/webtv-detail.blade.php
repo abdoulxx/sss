@@ -214,11 +214,39 @@
                     <div class="video-container">
                         @if($webtv->code_embed_vimeo)
                             <div class="video-embed">
-                                {!! $webtv->code_embed_vimeo !!}
+                                @php
+                                    $embedCode = $webtv->code_embed_vimeo;
+                                    // Ajouter autoplay=1&muted=1 si pas déjà présent
+                                    if (strpos($embedCode, 'autoplay=1') === false && strpos($embedCode, 'muted=1') === false) {
+                                        // Rechercher l'URL dans l'iframe src
+                                        if (preg_match('/src="([^"]+)"/', $embedCode, $matches)) {
+                                            $url = $matches[1];
+                                            // Ajouter les paramètres
+                                            $separator = strpos($url, '?') !== false ? '&' : '?';
+                                            $newUrl = $url . $separator . 'autoplay=1&muted=1';
+                                            $embedCode = str_replace($url, $newUrl, $embedCode);
+                                        }
+                                    }
+                                @endphp
+                                {!! $embedCode !!}
                             </div>
                         @elseif($webtv->code_integration_vimeo)
                             <div class="video-embed">
-                                {!! $webtv->code_integration_vimeo !!}
+                                @php
+                                    $embedCode = $webtv->code_integration_vimeo;
+                                    // Ajouter autoplay=1&muted=1 si pas déjà présent
+                                    if (strpos($embedCode, 'autoplay=1') === false && strpos($embedCode, 'muted=1') === false) {
+                                        // Rechercher l'URL dans l'iframe src
+                                        if (preg_match('/src="([^"]+)"/', $embedCode, $matches)) {
+                                            $url = $matches[1];
+                                            // Ajouter les paramètres
+                                            $separator = strpos($url, '?') !== false ? '&' : '?';
+                                            $newUrl = $url . $separator . 'autoplay=1&muted=1';
+                                            $embedCode = str_replace($url, $newUrl, $embedCode);
+                                        }
+                                    }
+                                @endphp
+                                {!! $embedCode !!}
                             </div>
                         @else
                             <!-- Fallback si pas de code Vimeo -->

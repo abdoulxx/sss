@@ -383,7 +383,21 @@
                     <div class="video-player-wrapper">
                         @if($liveVideo && !empty($liveVideo->code_embed_vimeo))
                             <!-- Live en cours avec code embed -->
-                            {!! $liveVideo->code_embed_vimeo !!}
+                            @php
+                                $embedCode = $liveVideo->code_embed_vimeo;
+                                // Ajouter autoplay=1&muted=1 si pas déjà présent
+                                if (strpos($embedCode, 'autoplay=1') === false && strpos($embedCode, 'muted=1') === false) {
+                                    // Rechercher l'URL dans l'iframe src
+                                    if (preg_match('/src="([^"]+)"/', $embedCode, $matches)) {
+                                        $url = $matches[1];
+                                        // Ajouter les paramètres
+                                        $separator = strpos($url, '?') !== false ? '&' : '?';
+                                        $newUrl = $url . $separator . 'autoplay=1&muted=1';
+                                        $embedCode = str_replace($url, $newUrl, $embedCode);
+                                    }
+                                }
+                            @endphp
+                            {!! $embedCode !!}
                         @elseif($liveVideo)
                             <!-- Live en cours sans code embed -->
                             <img src="{{ $liveVideo->image_path ? asset('storage/' . $liveVideo->image_path) : asset('assets/default/image_default.jpg') }}" alt="{{ $liveVideo->titre ?? 'Vidéo en direct' }}" style="width: 100%; height: 100%; object-fit: cover;">
