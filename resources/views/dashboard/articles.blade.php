@@ -530,11 +530,11 @@
                                     </form>
                                 @endif
                                 
-                                <!-- Bouton supprimer - Admin/Directeur (tous) ou Journaliste (ses articles non-publiés) -->
+                                <!-- Bouton supprimer - Admin/Directeur (tous) ou Journaliste (seulement ses brouillons) -->
                                 @if(auth()->check() && (
-                                    auth()->user()->estAdmin() || 
+                                    auth()->user()->estAdmin() ||
                                     auth()->user()->estDirecteurPublication() ||
-                                    (auth()->user()->estJournaliste() && $article->user_id === auth()->id() && $article->status !== 'published')
+                                    (auth()->user()->estJournaliste() && $article->user_id === auth()->id() && $article->status === 'draft')
                                 ))
                                     <form method="POST" action="{{ route('dashboard.articles.delete', $article->id) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?')">
                                         @csrf

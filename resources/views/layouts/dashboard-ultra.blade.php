@@ -212,85 +212,35 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Gestion</div>
                     <ul class="nav-menu">
-                        <!-- Gestion des Articles -->
-                        <li class="nav-item has-submenu {{ request()->routeIs('dashboard.articles') ? 'active' : '' }}">
-                            <a href="#" class="nav-link submenu-toggle">
-                                <i class="nav-icon fas fa-newspaper"></i>
-                                <span class="nav-text">Gestion des Articles</span>
-                                <i class="submenu-arrow fas fa-chevron-down"></i>
+                        <!-- Ajouter un article - Lien direct -->
+                        <li class="nav-item {{ request()->routeIs('dashboard.articles.create') ? 'active' : '' }}">
+                            <a href="{{ route('dashboard.articles.create') }}" class="nav-link" data-section="add-article">
+                                <i class="nav-icon fas fa-plus"></i>
+                                <span class="nav-text">Ajouter un Article</span>
                             </a>
-                            <ul class="nav-submenu">
-                                <!-- Créer article - Accessible à tous -->
-                                <li class="nav-subitem">
-                                    <a href="{{ route('dashboard.articles.create') }}" class="nav-sublink" data-section="add-article">
-                                        <i class="nav-subicon fas fa-plus"></i>
-                                        <span class="nav-subtext">Ajouter un article</span>
-                                    </a>
-                                </li>
-                                
-                                <!-- Liste des articles - Accessible à tous -->
-                                <li class="nav-subitem">
-                                    <a href="{{ route('dashboard.articles') }}" class="nav-sublink" data-section="list-articles">
-                                        <i class="nav-subicon fas fa-list"></i>
-                                        <span class="nav-subtext">Liste des articles</span>
-                                    </a>
-                                </li>
-                                
-                                <!-- Mes articles - Seulement pour journalistes -->
-                                @if(auth()->check() && auth()->user()->estJournaliste())
-                                    <li class="nav-subitem">
-                                        <a href="{{ route('dashboard.mes-articles') }}" class="nav-sublink" data-section="mes-articles">
-                                            <i class="nav-subicon fas fa-user-edit"></i>
-                                            <span class="nav-subtext">Mes articles</span>
-                                        </a>
-                                    </li>
-                                @endif
-                                
-                                <!-- Catégories - Lecture pour tous -->
-                                <li class="nav-subitem">
-                                    <a href="{{ route('dashboard.categories.index') }}" class="nav-sublink" data-section="list-categories">
-                                        <i class="nav-subicon fas fa-folder-tree"></i>
-                                        <span class="nav-subtext">Catégories</span>
-                                    </a>
-                                </li>
-                                
-                                <!-- Créer catégorie - Seulement Admin et Directeur -->
-                                @if(auth()->check() && (auth()->user()->estAdmin() || auth()->user()->estDirecteurPublication()))
-                                    <li class="nav-subitem">
-                                        <a href="{{ route('dashboard.categories.create') }}" class="nav-sublink" data-section="add-article-category">
-                                            <i class="nav-subicon fas fa-folder-plus"></i>
-                                            <span class="nav-subtext">Ajouter une catégorie</span>
-                                        </a>
-                                    </li>
-                                @endif
-                                @if(isset($sidebarCategories) && $sidebarCategories->count())
-                                    @foreach($sidebarCategories as $cat)
-                                        <li class="nav-subitem">
-                                            <a href="{{ route('dashboard.categories.edit', $cat->id) }}" class="nav-sublink" title="Éditer {{ $cat->name }}">
-                                                <i class="nav-subicon fas fa-folder"></i>
-                                                <span class="nav-subtext">{{ $cat->name }}</span>
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                @endif
-                                <li class="nav-subitem">
-                                    <a href="#article-drafts" class="nav-sublink" data-section="article-drafts">
-                                        <i class="nav-subicon fas fa-edit"></i>
-                                        <span class="nav-subtext">Brouillons</span>
-                                    </a>
-                                </li>
-                                <li class="nav-subitem">
-                                    <a href="#article-comments" class="nav-sublink" data-section="article-comments">
-                                        <i class="nav-subicon fas fa-comments"></i>
-                                        <span class="nav-subtext">Commentaires</span>
-                                    </a>
-                                </li>
-                            </ul>
                         </li>
 
+                        <!-- Liste des articles - Lien direct -->
+                        <li class="nav-item {{ request()->routeIs('dashboard.articles') && !request()->routeIs('dashboard.articles.create') && !request()->routeIs('dashboard.mes-articles') ? 'active' : '' }}">
+                            <a href="{{ route('dashboard.articles') }}" class="nav-link" data-section="list-articles">
+                                <i class="nav-icon fas fa-list"></i>
+                                <span class="nav-text">Liste des Articles</span>
+                            </a>
+                        </li>
 
-                        <!-- Gestion WebTV - Accessible à tous les utilisateurs authentifiés -->
-                        @if(auth()->check())
+                        <!-- Mes articles - Seulement pour journalistes -->
+                        @if(auth()->check() && auth()->user()->estJournaliste())
+                            <li class="nav-item {{ request()->routeIs('dashboard.mes-articles') ? 'active' : '' }}">
+                                <a href="{{ route('dashboard.mes-articles') }}" class="nav-link" data-section="mes-articles">
+                                    <i class="nav-icon fas fa-user-edit"></i>
+                                    <span class="nav-text">Mes Articles</span>
+                                </a>
+                            </li>
+                        @endif
+
+
+                        <!-- Gestion WebTV - Accessible seulement aux admins/directeurs -->
+                        @if(auth()->check() && !auth()->user()->estJournaliste())
                             <li class="nav-item has-submenu {{ request()->routeIs('dashboard.webtv.*') ? 'active' : '' }}">
                                 <a href="#" class="nav-link submenu-toggle">
                                     <i class="nav-icon fas fa-video"></i>
@@ -313,13 +263,7 @@
                                 <li class="nav-subitem">
                                     <a href="{{ route('dashboard.webtv.index') }}" class="nav-sublink" data-section="list-webtv">
                                         <i class="nav-subicon fas fa-list"></i>
-                                        <span class="nav-subtext">
-                                            @if(auth()->user()->estJournaliste())
-                                                Mes Événements WebTV
-                                            @else
-                                                Tous les Événements WebTV
-                                            @endif
-                                        </span>
+                                        <span class="nav-subtext">Tous les Événements WebTV</span>
                                     </a>
                                 </li>
                             </ul>

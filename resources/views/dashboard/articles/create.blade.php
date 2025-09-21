@@ -713,21 +713,26 @@
                 Options de Publication
             </h2>
             
-            <div class="form-group">
-                <label class="form-label required">Statut de publication</label>
-                <div class="status-selector">
-                    <div class="status-option selected" data-status="draft">
-                        <i class="fas fa-edit"></i>
-                        <div>Brouillon</div>
-                        <small>Enregistrer sans publier</small>
+            @if(auth()->check() && auth()->user()->estJournaliste())
+                <!-- Pour les journalistes : pas de sélecteur, juste info -->
+                <div class="form-group">
+                    <label class="form-label">Statut de publication</label>
+                    <div class="alert" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 1rem; border-radius: 0.5rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Mode Journaliste :</strong> Utilisez les boutons en bas pour choisir entre "Enregistrer le brouillon" ou "Soumettre pour validation"
                     </div>
-                    @if(auth()->check() && auth()->user()->estJournaliste())
-                        <div class="status-option" data-status="pending">
-                            <i class="fas fa-hourglass-half"></i>
-                            <div>Soumettre</div>
-                            <small>Soumettre pour validation</small>
+                    <input type="hidden" id="status" name="status" value="draft">
+                </div>
+            @else
+                <!-- Pour les admins : sélecteur complet -->
+                <div class="form-group">
+                    <label class="form-label required">Statut de publication</label>
+                    <div class="status-selector">
+                        <div class="status-option selected" data-status="draft">
+                            <i class="fas fa-edit"></i>
+                            <div>Brouillon</div>
+                            <small>Enregistrer sans publier</small>
                         </div>
-                    @else
                         <div class="status-option" data-status="pending">
                             <i class="fas fa-hourglass-half"></i>
                             <div>En attente</div>
@@ -738,10 +743,10 @@
                             <div>Publié</div>
                             <small>Visible par tous</small>
                         </div>
-                    @endif
+                    </div>
+                    <input type="hidden" id="status" name="status" value="draft">
                 </div>
-                <input type="hidden" id="status" name="status" value="draft">
-            </div>
+            @endif
 
             <div class="form-row">
                 <div class="form-group">
@@ -1009,14 +1014,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.removeTag = removeTag;
 
-    // Status selector
-    document.querySelectorAll('.status-option').forEach(option => {
-        option.addEventListener('click', function() {
-            document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
-            this.classList.add('selected');
-            document.getElementById('status').value = this.dataset.status;
+    // Status selector (seulement pour les non-journalistes)
+    const statusOptions = document.querySelectorAll('.status-option');
+    if (statusOptions.length > 0) {
+        statusOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.status-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('status').value = this.dataset.status;
+            });
         });
-    });
+    }
 
     // Form progress
     function updateProgress() {
@@ -1043,8 +1051,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Save draft functionality
     document.getElementById('saveDraft').addEventListener('click', function() {
+        console.log('Save Draft clicked - setting status to draft');
         document.getElementById('status').value = 'draft';
         document.getElementById('content').value = quill.root.innerHTML;
+        console.log('Status field value:', document.getElementById('status').value);
         document.getElementById('articleForm').submit();
     });
 

@@ -758,29 +758,39 @@
                 Options de Publication
             </h2>
             
-            <div class="form-group">
-                <label class="form-label required">Statut de publication</label>
-                <div class="status-selector">
-                    <div class="status-option {{ old('status', $article->status) == 'draft' ? 'selected' : '' }}" data-status="draft">
-                        <i class="fas fa-edit"></i>
-                        <div>Brouillon</div>
-                        <small>Enregistrer sans publier</small>
+            @if(auth()->check() && auth()->user()->estJournaliste())
+                <!-- Pour les journalistes : seulement brouillon et soumettre -->
+                <div class="form-group">
+                    <label class="form-label required">Statut de publication</label>
+                    <div class="status-selector">
+                        <div class="status-option {{ old('status', $article->status) == 'draft' ? 'selected' : '' }}" data-status="draft">
+                            <i class="fas fa-edit"></i>
+                            <div>Brouillon</div>
+                            <small>Enregistrer sans publier</small>
+                        </div>
+                        <div class="status-option {{ old('status', $article->status) == 'pending' ? 'selected' : '' }}" data-status="pending">
+                            <i class="fas fa-hourglass-half"></i>
+                            <div>Soumettre</div>
+                            <small>Soumettre pour validation</small>
+                        </div>
                     </div>
-                    @if($article->status !== 'published')
-                        @if(auth()->check() && auth()->user()->estJournaliste())
-                            <div class="status-option {{ old('status', $article->status) == 'pending' ? 'selected' : '' }}" data-status="pending">
-                                <i class="fas fa-hourglass-half"></i>
-                                <div>Soumettre</div>
-                                <small>Soumettre pour validation</small>
-                            </div>
-                        @else
-                            <div class="status-option {{ old('status', $article->status) == 'pending' ? 'selected' : '' }}" data-status="pending">
-                                <i class="fas fa-hourglass-half"></i>
-                                <div>En attente</div>
-                                <small>En attente de validation</small>
-                            </div>
-                        @endif
-                    @endif
+                    <input type="hidden" id="status" name="status" value="{{ old('status', $article->status) }}">
+                </div>
+            @else
+                <!-- Pour les admins : sélecteur complet -->
+                <div class="form-group">
+                    <label class="form-label required">Statut de publication</label>
+                    <div class="status-selector">
+                        <div class="status-option {{ old('status', $article->status) == 'draft' ? 'selected' : '' }}" data-status="draft">
+                            <i class="fas fa-edit"></i>
+                            <div>Brouillon</div>
+                            <small>Enregistrer sans publier</small>
+                        </div>
+                        <div class="status-option {{ old('status', $article->status) == 'pending' ? 'selected' : '' }}" data-status="pending">
+                            <i class="fas fa-hourglass-half"></i>
+                            <div>En attente</div>
+                            <small>En attente de validation</small>
+                        </div>
                         <div class="status-option {{ old('status', $article->status) == 'published' ? 'selected' : '' }}" data-status="published">
                             <i class="fas fa-globe"></i>
                             <div>Publié</div>
@@ -791,9 +801,10 @@
                             <div>Archivé</div>
                             <small>Article archivé</small>
                         </div>
+                    </div>
+                    <input type="hidden" id="status" name="status" value="{{ old('status', $article->status) }}">
                 </div>
-                <input type="hidden" id="status" name="status" value="{{ old('status', $article->status) }}">
-            </div>
+            @endif
 
             <div class="form-row">
                 <div class="form-group">

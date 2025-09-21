@@ -102,8 +102,11 @@ class DashboardController extends Controller
         $articlesQuery = Article::with(['category', 'user']);
 
         if ($utilisateur->estJournaliste()) {
-            // Journalists should see all their own articles, regardless of status
-            $articlesQuery->where('user_id', $utilisateur->id);
+            // Journalists should see: their own articles (all statuses) + published articles from others
+            $articlesQuery->where(function($query) use ($utilisateur) {
+                $query->where('user_id', $utilisateur->id)  // Leurs propres articles
+                      ->orWhere('status', 'published');      // Articles publiés des autres
+            });
         }
 
         // Apply search filters
@@ -141,6 +144,47 @@ class DashboardController extends Controller
     }
 
     /**
+     * Show my articles page for journalists.
+     */
+    public function mesArticles(Request $request)
+    {
+        $utilisateur = Auth::user();
+
+        // Seuls les journalistes peuvent accéder à cette page
+        if (!$utilisateur->estJournaliste()) {
+            return redirect()->route('dashboard.articles');
+        }
+
+        $articlesQuery = Article::with(['category', 'user'])
+            ->where('user_id', $utilisateur->id);
+
+        // Apply search filters
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $articlesQuery->where(function($query) use ($search) {
+                $query->where('title', 'LIKE', '%' . $search . '%')
+                      ->orWhere('excerpt', 'LIKE', '%' . $search . '%')
+                      ->orWhere('content', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        // Filter by category
+        if ($request->has('category') && $request->category) {
+            $articlesQuery->where('category_id', $request->category);
+        }
+
+        // Filter by status
+        if ($request->has('status') && $request->status) {
+            $articlesQuery->where('status', $request->status);
+        }
+
+        $articles = $articlesQuery->orderBy('created_at', 'desc')->paginate(15);
+        $categories = Category::where('status', 'active')->where('is_active', 1)->orderBy('name')->get();
+
+        return view('dashboard.articles.mes-articles', compact('articles', 'categories'));
+    }
+
+    /**
      * Show create article page.
      */
     public function createArticle()
@@ -159,6 +203,14 @@ class DashboardController extends Controller
     {
         $utilisateur = Auth::user();
         $statusValidation = 'required|in:draft,published' . ($utilisateur->estJournaliste() ? ',pending' : '');
+
+        // Log pour debugging
+        \Log::info('Article creation attempt', [
+            'user_id' => $utilisateur->id,
+            'user_role' => $utilisateur->role_utilisateur,
+            'status_received' => $request->input('status'),
+            'is_journalist' => $utilisateur->estJournaliste()
+        ]);
 
         $validatedData = $request->validate([
             'title' => 'required|string|max:200',
@@ -321,8 +373,8 @@ class DashboardController extends Controller
         $utilisateur = Auth::user();
         $article = Article::findOrFail($id);
 
-        if ($utilisateur->estJournaliste() && ($article->author_id !== $utilisateur->id || $article->status === 'published')) {
-            return redirect()->back()->with('error', 'Vous ne pouvez pas supprimer cet article.');
+        if ($utilisateur->estJournaliste() && ($article->author_id !== $utilisateur->id || $article->status !== 'draft')) {
+            return redirect()->back()->with('error', 'Vous ne pouvez supprimer que vos brouillons.');
         }
 
         if ($article->featured_image_path) {
