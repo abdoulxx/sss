@@ -542,43 +542,25 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="author" class="form-label">Auteur</label>
-                    @if(auth()->user()->estAdmin() || auth()->user()->estDirecteurPublication())
-                        <!-- Sélecteur d'auteur pour admins/directeurs -->
-                        <select id="author" name="user_id" class="form-input form-select">
-                            @php
-                                $users = \App\Models\User::where('est_actif', 1)->orderBy('name')->get();
-                            @endphp
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}" {{ old('user_id', $article->user_id) == $user->id ? 'selected' : '' }}>
-                                    {{ $user->name }} ({{ ucfirst($user->role_utilisateur) }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <small style="color: #6b7280; font-size: 0.85rem; margin-top: 0.5rem; display: block;">
-                            Vous pouvez modifier l'auteur de cet article.
-                        </small>
-                    @else
-                        <!-- Affichage en lecture seule pour journalistes -->
-                        <div class="d-flex align-items-center p-3 bg-light rounded">
-                            <div class="bg-primary rounded-circle me-3 d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
-                                {{ strtoupper(substr($article->user->name ?? Auth::user()->name, 0, 1)) }}
-                            </div>
-                            <div>
-                                <strong>{{ $article->user->name ?? Auth::user()->name }}</strong>
-                                <br>
-                                <small class="text-muted">{{ $article->user->nom_role ?? Auth::user()->nom_role }}</small>
-                            </div>
+                    <label class="form-label">Auteur</label>
+                    <div class="d-flex align-items-center p-3 bg-light rounded">
+                        <div class="bg-primary rounded-circle me-3 d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
+                            {{ strtoupper(substr($article->user->name ?? Auth::user()->name, 0, 1)) }}
                         </div>
-                        <input type="hidden" name="user_id" value="{{ $article->user_id }}">
-                        <small style="color: #6b7280; font-size: 0.85rem; margin-top: 0.5rem; display: block;">
-                            L'auteur de cet article ne peut pas être modifié.
-                        </small>
-                    @endif
+                        <div>
+                            <strong>{{ $article->user->name ?? Auth::user()->name }}</strong>
+                            <br>
+                            <small class="text-muted">{{ $article->user->nom_role ?? Auth::user()->nom_role }}</small>
+                        </div>
+                    </div>
+                    <small style="color: #6b7280; font-size: 0.85rem; margin-top: 0.5rem; display: block;">
+                        L'auteur de cet article ne peut pas être modifié.
+                    </small>
                 </div>
             </div>
 
-            <div class="form-row">
+            <!-- Secteur - Affiché seulement pour "Entreprises & Impacts" -->
+            <div class="form-row" id="sector-group" style="display: none; transition: all 0.3s ease;">
                 <div class="form-group">
                     <label for="sector" class="form-label">Secteur</label>
                     <select id="sector" name="sector" class="form-input form-select">
@@ -590,9 +572,12 @@
                         <option value="services" {{ $oldSector === 'services' ? 'selected' : '' }}>Services</option>
                         <option value="energie" {{ $oldSector === 'energie' ? 'selected' : '' }}>Énergie</option>
                     </select>
-                    <small style="color: #6b7280; font-size: 0.85rem;">Sélectionnez le secteur pour les pages "Figures de l'Économie" et "Entreprises & Impacts". Choisissez "Tout" si non applicable.</small>
+                    <small style="color: #6b7280; font-size: 0.85rem;">Sélectionnez le secteur pour la catégorie "Entreprises & Impacts".</small>
                 </div>
+            </div>
 
+            <!-- Thématique - Affiché seulement pour "Grands Genres" -->
+            <div class="form-row" id="theme-group" style="display: none; transition: all 0.3s ease;">
                 <div class="form-group">
                     <label for="theme" class="form-label">Thématique</label>
                     <select id="theme" name="theme" class="form-input form-select">
@@ -603,7 +588,7 @@
                         <option value="documentaires" {{ $oldTheme === 'documentaires' ? 'selected' : '' }}>Documentaires</option>
                         <option value="temoignages" {{ $oldTheme === 'temoignages' ? 'selected' : '' }}>Témoignages</option>
                     </select>
-                    <small style="color: #6b7280; font-size: 0.85rem;">Sélectionnez la thématique pour l'affichage sur la page "Grands Genres".</small>
+                    <small style="color: #6b7280; font-size: 0.85rem;">Sélectionnez la thématique pour la catégorie "Grands Genres".</small>
                 </div>
             </div>
 
@@ -1159,6 +1144,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial progress update
     updateProgress();
+
+    // Gestion des champs conditionnels selon la catégorie
+    function handleCategoryChange() {
+        const categorySelect = document.getElementById('category');
+        const sectorGroup = document.getElementById('sector-group');
+        const themeGroup = document.getElementById('theme-group');
+
+        if (!categorySelect) return;
+
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const categoryName = selectedOption ? selectedOption.text : '';
+
+        // Masquer tous les champs par défaut
+        sectorGroup.style.display = 'none';
+        themeGroup.style.display = 'none';
+
+        // Afficher le secteur pour "Entreprises & Impacts"
+        if (categoryName.toLowerCase().includes('entreprises') && categoryName.toLowerCase().includes('impacts')) {
+            sectorGroup.style.display = 'block';
+            console.log('Secteur affiché pour:', categoryName);
+        }
+
+        // Afficher la thématique pour "Grands Genres" (avec variations possibles)
+        if (categoryName.toLowerCase().includes('grands') && categoryName.toLowerCase().includes('genres')) {
+            themeGroup.style.display = 'block';
+            console.log('Thématique affiché pour:', categoryName);
+        }
+        // Alternative si le nom est différent
+        else if (categoryName.toLowerCase().includes('genre')) {
+            themeGroup.style.display = 'block';
+            console.log('Thématique affiché pour (alternative):', categoryName);
+        }
+
+        // Debug: afficher le nom de la catégorie sélectionnée
+        console.log('Catégorie sélectionnée:', categoryName);
+    }
+
+    // Écouter les changements de catégorie
+    const categorySelect = document.getElementById('category');
+    if (categorySelect) {
+        categorySelect.addEventListener('change', handleCategoryChange);
+        // Vérifier au chargement de la page pour afficher les champs selon la catégorie existante
+        handleCategoryChange();
+    }
 });
 </script>
 @endpush

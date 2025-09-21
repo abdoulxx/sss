@@ -555,7 +555,8 @@
                 </div>
             </div>
 
-            <div class="form-row">
+            <!-- Secteur - Affiché seulement pour "Entreprises & Impacts" -->
+            <div class="form-row" id="sector-group" style="display: none; transition: all 0.3s ease;">
                 <div class="form-group">
                     <label for="sector" class="form-label">Secteur</label>
                     <select id="sector" name="sector" class="form-input form-select">
@@ -567,11 +568,12 @@
                         <option value="services" {{ $oldSector === 'services' ? 'selected' : '' }}>Services</option>
                         <option value="energie" {{ $oldSector === 'energie' ? 'selected' : '' }}>Énergie</option>
                     </select>
-                    <small style="color: #6b7280; font-size: 0.85rem;">Sélectionnez le secteur pour les pages "Figures de l'Économie" et "Entreprises & Impacts". Choisissez "Tout" si non applicable.</small>
+                    <small style="color: #6b7280; font-size: 0.85rem;">Sélectionnez le secteur pour la catégorie "Entreprises & Impacts".</small>
                 </div>
             </div>
 
-            <div class="form-row">
+            <!-- Thématique - Affiché seulement pour "Grands Genres" -->
+            <div class="form-row" id="theme-group" style="display: none; transition: all 0.3s ease;">
                 <div class="form-group">
                     <label for="theme" class="form-label">Thématique</label>
                     <select id="theme" name="theme" class="form-input form-select">
@@ -582,7 +584,7 @@
                         <option value="documentaires" {{ $oldTheme === 'documentaires' ? 'selected' : '' }}>Documentaires</option>
                         <option value="temoignages" {{ $oldTheme === 'temoignages' ? 'selected' : '' }}>Témoignages</option>
                     </select>
-                    <small style="color: #6b7280; font-size: 0.85rem;">Sélectionnez la thématique pour l'affichage sur la page "Grands Genres".</small>
+                    <small style="color: #6b7280; font-size: 0.85rem;">Sélectionnez la thématique pour la catégorie "Grands Genres".</small>
                 </div>
             </div>
 
@@ -1104,6 +1106,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initial progress update
     updateProgress();
+
+    // Gestion des champs conditionnels selon la catégorie
+    function handleCategoryChange() {
+        const categorySelect = document.getElementById('main_category');
+        const sectorGroup = document.getElementById('sector-group');
+        const themeGroup = document.getElementById('theme-group');
+        const sectorSelect = document.getElementById('sector');
+        const themeSelect = document.getElementById('theme');
+
+        if (!categorySelect) return;
+
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const categoryName = selectedOption ? selectedOption.text : '';
+
+        // Masquer tous les champs par défaut
+        sectorGroup.style.display = 'none';
+        themeGroup.style.display = 'none';
+
+        // Réinitialiser les valeurs
+        sectorSelect.selectedIndex = 0;
+        themeSelect.selectedIndex = 0;
+
+        // Afficher le secteur pour "Entreprises & Impacts"
+        if (categoryName.toLowerCase().includes('entreprises') && categoryName.toLowerCase().includes('impacts')) {
+            sectorGroup.style.display = 'block';
+            console.log('Secteur affiché pour:', categoryName);
+        }
+
+        // Afficher la thématique pour "Grands Genres" (avec variations possibles)
+        if (categoryName.toLowerCase().includes('grands') && categoryName.toLowerCase().includes('genres')) {
+            themeGroup.style.display = 'block';
+            console.log('Thématique affiché pour:', categoryName);
+        }
+        // Alternative si le nom est différent
+        else if (categoryName.toLowerCase().includes('genre')) {
+            themeGroup.style.display = 'block';
+            console.log('Thématique affiché pour (alternative):', categoryName);
+        }
+
+        // Debug: afficher le nom de la catégorie sélectionnée
+        console.log('Catégorie sélectionnée:', categoryName);
+    }
+
+    // Écouter les changements de catégorie
+    const categorySelect = document.getElementById('main_category');
+    if (categorySelect) {
+        categorySelect.addEventListener('change', handleCategoryChange);
+        // Vérifier au chargement de la page
+        handleCategoryChange();
+    }
 });
 </script>
 @endpush
