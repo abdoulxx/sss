@@ -103,7 +103,7 @@
                     Les Prix Impact Féminin
                 </h2>
                 <p class="impact-awards-description" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
-                    Trois catégories pour honorer l'excellence féminine sous toutes ses formes
+                    Mettre en lumière l'audace, la résilience et la vision des femmes qui non seulement bâtissent l'économie, mais génèrent également un impact ESG significatif sur la communauté après la création de leur entreprise, dont la durée d'existence est comprise entre 3 et 10 ans et plus.
                 </p>
             </div>
         </div>
@@ -117,17 +117,29 @@
                         <div class="award-icon">
                             <i class="fas fa-seedling"></i>
                         </div>
-                        <h3 class="award-title">Prix Éclosion</h3>
-                        <p class="award-subtitle">Jeunes Entrepreneures</p>
+                        <h3 class="award-title">Prix Éclosion Féminin</h3>
+                        <p class="award-subtitle"></p>
                     </div>
                     <div class="award-description">
-                        <p>Récompense les jeunes femmes entrepreneures qui se distinguent par leur innovation et leur potentiel.</p>
-                        <ul class="award-criteria">
-                            <li>Âge maximum : 35 ans</li>
-                            <li>Entreprise créée depuis moins de 5 ans</li>
-                            <li>Innovation remarquable</li>
-                            <li>Impact social ou économique</li>
-                        </ul>
+                        <p>Ce prix met en lumière les femmes entrepreneures qui ont lancé une entreprise jeune et prometteuse</p>
+
+                        <div style="margin: 15px 0;">
+                            <h4 style="color: #8B5CF6; font-size: 14px; font-weight: 600; margin-bottom: 5px;">●Conditions</h4>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                                <li>Durée d'existence : 3 à 5 ans</li>
+                                <li>Nombre minimum d'employées : 2</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin: 15px 0;">
+                            <h4 style="color: #8B5CF6; font-size: 14px; font-weight: 600; margin-bottom: 5px;">●Critères valorisés</h4>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                                <li>Une croissance régulière depuis la création</li>
+                                <li>La première structuration réussie de l'équipe</li>
+                                <li>L'établissement de partenariats ou de clients significatifs</li>
+                                <li>La capacité à innover ou à se différencier sur le marché</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -139,17 +151,29 @@
                         <div class="award-icon">
                             <i class="fas fa-shield-alt"></i>
                         </div>
-                        <h3 class="award-title">Prix Résilience</h3>
-                        <p class="award-subtitle">Parcours Inspirants</p>
+                        <h3 class="award-title">Prix Résilience Féminin</h3>
+                        <p class="award-subtitle"></p>
                     </div>
                     <div class="award-description">
-                        <p>Honore les femmes qui ont surmonté des défis majeurs pour bâtir des entreprises prospères.</p>
-                        <ul class="award-criteria">
-                            <li>Parcours entrepreneurial remarquable</li>
-                            <li>Capacité de rebond face aux difficultés</li>
-                            <li>Inspiration pour la communauté</li>
-                            <li>Impact durable</li>
-                        </ul>
+                        <p>Ce prix honore les femmes dirigeantes qui ont traversé des étapes critiques du développement et de la consolidation. Il célèbre leur persévérance, leur stabilité et leur adaptabilité dans la construction d'une base solide pour une croissance durable.</p>
+
+                        <div style="margin: 15px 0;">
+                            <h4 style="color: #8B5CF6; font-size: 14px; font-weight: 600; margin-bottom: 5px;">●Conditions</h4>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                                <li>Durée d'existence : 6 à 9 ans</li>
+                                <li>Nombre minimum d'employées : 4</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin: 15px 0;">
+                            <h4 style="color: #8B5CF6; font-size: 14px; font-weight: 600; margin-bottom: 5px;">●Critères valorisés</h4>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                                <li>Une gestion financière et opérationnelle saine</li>
+                                <li>Le développement de l'équipe et la structuration interne</li>
+                                <li>La capacité à surmonter les crises ou à pivoter avec succès</li>
+                                <li>Des impacts positifs mesurables sur le marché ou la communauté</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -161,17 +185,28 @@
                         <div class="award-icon">
                             <i class="fas fa-lightbulb"></i>
                         </div>
-                        <h3 class="award-title">Prix Visionnaire</h3>
-                        <p class="award-subtitle">Leadership & Innovation</p>
+                        <h3 class="award-title">Prix Visionnaire Féminin</h3>
+                        <p class="award-subtitle"></p>
                     </div>
                     <div class="award-description">
-                        <p>Célèbre les femmes leaders qui transforment leur secteur par leur vision innovante.</p>
-                        <ul class="award-criteria">
-                            <li>Leadership reconnu dans le secteur</li>
-                            <li>Innovation disruptive</li>
-                            <li>Influence sur l'écosystème</li>
-                            <li>Vision transformatrice</li>
-                        </ul>
+                        <p>Ce prix récompense les femmes entrepreneures qui ont bâti une entreprise pérenne, influente et résonnent parmi vers l'avenir avec une vision stratégique, l'impact sociétal et l'héritage entrepreneurial des dirigeantes les plus expérimentées.</p>
+
+                        <div style="margin: 15px 0;">
+                            <h4 style="color: #8B5CF6; font-size: 14px; font-weight: 600; margin-bottom: 5px;">●Conditions</h4>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                                <li>Durée d'existence : 10 ans et plus</li>
+                                <li>Nombre minimum d'employées : 6 et plus</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin: 15px 0;">
+                            <h4 style="color: #8B5CF6; font-size: 14px; font-weight: 600; margin-bottom: 5px;">●Critères valorisés</h4>
+                            <ul style="margin: 0; padding-left: 15px; font-size: 13px;">
+                                <li>La pérennité de l'entreprise sur plus d'une décennie</li>
+                                <li>Un leadership reconnu dans le secteur</li>
+                                <li>La création d'emplois et une contribution significative à l'économie</li>
+                                <li>L'engagement avéré dans l'innovation, le développement durable ou le mentorat
+                        </div>
                     </div>
                 </div>
             </div>
