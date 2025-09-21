@@ -107,6 +107,12 @@ class DashboardController extends Controller
                 $query->where('user_id', $utilisateur->id)  // Leurs propres articles
                       ->orWhere('status', 'published');      // Articles publiés des autres
             });
+        } else {
+            // Admins/Directeurs should see: all articles EXCEPT other users' drafts
+            $articlesQuery->where(function($query) use ($utilisateur) {
+                $query->where('status', '!=', 'draft')       // Tous les articles non-brouillons
+                      ->orWhere('user_id', $utilisateur->id); // OU leurs propres brouillons
+            });
         }
 
         // Apply search filters
@@ -204,13 +210,6 @@ class DashboardController extends Controller
         $utilisateur = Auth::user();
         $statusValidation = 'required|in:draft,published' . ($utilisateur->estJournaliste() ? ',pending' : '');
 
-        // Log pour debugging
-        \Log::info('Article creation attempt', [
-            'user_id' => $utilisateur->id,
-            'user_role' => $utilisateur->role_utilisateur,
-            'status_received' => $request->input('status'),
-            'is_journalist' => $utilisateur->estJournaliste()
-        ]);
 
         $validatedData = $request->validate([
             'title' => 'required|string|max:200',
@@ -319,6 +318,7 @@ class DashboardController extends Controller
             'excerpt' => 'required|string|max:500',
             'content' => 'required|string',
             'category_id' => 'required|exists:categories,id',
+            'user_id' => 'required|exists:users,id',
             'featured_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'status' => $statusValidation,
             'featured' => 'sometimes|boolean',
@@ -341,6 +341,7 @@ class DashboardController extends Controller
             'excerpt' => $validatedData['excerpt'],
             'content' => $validatedData['content'],
             'category_id' => $validatedData['category_id'],
+            'user_id' => $validatedData['user_id'],
             'status' => $validatedData['status'],
             'reading_time' => $this->calculateReadingTime($validatedData['content']),
             'is_featured' => $request->boolean('featured'),

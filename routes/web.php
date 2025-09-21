@@ -523,12 +523,12 @@ Route::get('/api/weather', function () {
         
         $response = file_get_contents($url);
         if ($response === false) {
-            throw new Exception('Failed to fetch weather data');
+            throw new Exception('Échec de la récupération des données météo');
         }
         
         $data = json_decode($response, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Invalid JSON response');
+            throw new Exception('Réponse JSON invalide');
         }
         
         return response()->json([

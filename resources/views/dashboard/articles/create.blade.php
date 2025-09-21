@@ -1051,10 +1051,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Save draft functionality
     document.getElementById('saveDraft').addEventListener('click', function() {
-        console.log('Save Draft clicked - setting status to draft');
         document.getElementById('status').value = 'draft';
         document.getElementById('content').value = quill.root.innerHTML;
-        console.log('Status field value:', document.getElementById('status').value);
         document.getElementById('articleForm').submit();
     });
 
@@ -1062,21 +1060,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitForReviewBtn = document.getElementById('submitForReview');
     if (submitForReviewBtn) {
         submitForReviewBtn.addEventListener('click', function(e) {
-            console.log('Submit button clicked');
             e.preventDefault(); // Empêcher le comportement par défaut
-            
+
             // Vérifier les champs requis
             const title = document.getElementById('title').value.trim();
             const mainCategory = document.getElementById('main_category').value;
             const subcategory = document.getElementById('subcategory').value;
             const excerpt = document.getElementById('excerpt').value.trim();
             const content = quill.getText().trim();
-
-            console.log('Title:', title);
-            console.log('Main Category:', mainCategory);
-            console.log('Subcategory:', subcategory);
-            console.log('Excerpt:', excerpt);
-            console.log('Content length:', content.length);
 
             if (!title) {
                 alert('Veuillez saisir un titre');
@@ -1101,8 +1092,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Définir le statut et soumettre
             document.getElementById('status').value = 'pending';
             document.getElementById('content').value = quill.root.innerHTML;
-            
-            console.log('Submitting form with status: pending');
+
             document.getElementById('articleForm').submit();
         });
     }

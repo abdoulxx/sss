@@ -76,10 +76,10 @@ class NotificationHelper
                      ->from(config('mail.from.address'), config('mail.from.name'));
             });
             
-            Log::info('Test email sent successfully', ['to' => $to, 'subject' => $subject]);
+            Log::info('Email de test envoyé avec succès', ['to' => $to, 'subject' => $subject]);
             return ['success' => true, 'message' => 'Email envoyé avec succès'];
         } catch (\Exception $e) {
-            Log::error('Failed to send test email', ['error' => $e->getMessage(), 'to' => $to]);
+            Log::error('Échec de l\'envoi de l\'email de test', ['error' => $e->getMessage(), 'to' => $to]);
             return ['success' => false, 'message' => 'Erreur : ' . $e->getMessage()];
         }
     }

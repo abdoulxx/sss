@@ -573,7 +573,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     enableActions();
                     currentEmbedCode = code;
                 } else {
-                    showError(data.message || 'Code embed invalide');
+                    showError(data.message || 'Code d\'intégration invalide');
                     resetValidation();
                 }
             })

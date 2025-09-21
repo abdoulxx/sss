@@ -542,20 +542,39 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Auteur</label>
-                    <div class="d-flex align-items-center p-3 bg-light rounded">
-                        <div class="bg-primary rounded-circle me-3 d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
-                            {{ strtoupper(substr($article->user->name ?? Auth::user()->name, 0, 1)) }}
+                    <label for="author" class="form-label">Auteur</label>
+                    @if(auth()->user()->estAdmin() || auth()->user()->estDirecteurPublication())
+                        <!-- Sélecteur d'auteur pour admins/directeurs -->
+                        <select id="author" name="user_id" class="form-input form-select">
+                            @php
+                                $users = \App\Models\User::where('est_actif', 1)->orderBy('name')->get();
+                            @endphp
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}" {{ old('user_id', $article->user_id) == $user->id ? 'selected' : '' }}>
+                                    {{ $user->name }} ({{ ucfirst($user->role_utilisateur) }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <small style="color: #6b7280; font-size: 0.85rem; margin-top: 0.5rem; display: block;">
+                            Vous pouvez modifier l'auteur de cet article.
+                        </small>
+                    @else
+                        <!-- Affichage en lecture seule pour journalistes -->
+                        <div class="d-flex align-items-center p-3 bg-light rounded">
+                            <div class="bg-primary rounded-circle me-3 d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
+                                {{ strtoupper(substr($article->user->name ?? Auth::user()->name, 0, 1)) }}
+                            </div>
+                            <div>
+                                <strong>{{ $article->user->name ?? Auth::user()->name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ $article->user->nom_role ?? Auth::user()->nom_role }}</small>
+                            </div>
                         </div>
-                        <div>
-                            <strong>{{ $article->user->name ?? Auth::user()->name }}</strong>
-                            <br>
-                            <small class="text-muted">{{ $article->user->nom_role ?? Auth::user()->nom_role }}</small>
-                        </div>
-                    </div>
-                    <small style="color: #6b7280; font-size: 0.85rem; margin-top: 0.5rem; display: block;">
-                        L'auteur de cet article ne peut pas être modifié.
-                    </small>
+                        <input type="hidden" name="user_id" value="{{ $article->user_id }}">
+                        <small style="color: #6b7280; font-size: 0.85rem; margin-top: 0.5rem; display: block;">
+                            L'auteur de cet article ne peut pas être modifié.
+                        </small>
+                    @endif
                 </div>
             </div>
 

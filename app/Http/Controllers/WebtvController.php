@@ -72,7 +72,7 @@ class WebtvController extends Controller
         } else {
             $code = $validated['code_embed_vimeo'] ?? '';
             if (!Str::contains($code, 'vimeo.com')) {
-                return back()->withErrors(['code_embed_vimeo' => 'Code embed Vimeo invalide'])->withInput();
+                return back()->withErrors(['code_embed_vimeo' => 'Code d\'intégration Vimeo invalide'])->withInput();
             }
             $payload['code_embed_vimeo'] = $code;
             // Extract event id if present
@@ -175,7 +175,7 @@ class WebtvController extends Controller
         } else {
             $code = $validated['code_embed_vimeo'] ?? $webtv->code_embed_vimeo;
             if ($code && !Str::contains($code, 'vimeo.com')) {
-                return back()->withErrors(['code_embed_vimeo' => 'Code embed Vimeo invalide'])->withInput();
+                return back()->withErrors(['code_embed_vimeo' => 'Code d\'intégration Vimeo invalide'])->withInput();
             }
             $payload['code_embed_vimeo'] = $code;
             if ($code && preg_match('/vimeo\\.com\/event\/(\d+)/', $code, $m)) {

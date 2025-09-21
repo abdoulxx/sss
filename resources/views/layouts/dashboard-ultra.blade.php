@@ -212,29 +212,89 @@
                 <div class="nav-section">
                     <div class="nav-section-title">Gestion</div>
                     <ul class="nav-menu">
-                        <!-- Ajouter un article - Lien direct -->
-                        <li class="nav-item {{ request()->routeIs('dashboard.articles.create') ? 'active' : '' }}">
-                            <a href="{{ route('dashboard.articles.create') }}" class="nav-link" data-section="add-article">
-                                <i class="nav-icon fas fa-plus"></i>
-                                <span class="nav-text">Ajouter un Article</span>
-                            </a>
-                        </li>
-
-                        <!-- Liste des articles - Lien direct -->
-                        <li class="nav-item {{ request()->routeIs('dashboard.articles') && !request()->routeIs('dashboard.articles.create') && !request()->routeIs('dashboard.mes-articles') ? 'active' : '' }}">
-                            <a href="{{ route('dashboard.articles') }}" class="nav-link" data-section="list-articles">
-                                <i class="nav-icon fas fa-list"></i>
-                                <span class="nav-text">Liste des Articles</span>
-                            </a>
-                        </li>
-
-                        <!-- Mes articles - Seulement pour journalistes -->
                         @if(auth()->check() && auth()->user()->estJournaliste())
+                            <!-- Interface simplifiée pour journalistes -->
+                            <!-- Ajouter un article - Lien direct -->
+                            <li class="nav-item {{ request()->routeIs('dashboard.articles.create') ? 'active' : '' }}">
+                                <a href="{{ route('dashboard.articles.create') }}" class="nav-link" data-section="add-article">
+                                    <i class="nav-icon fas fa-plus"></i>
+                                    <span class="nav-text">Ajouter un Article</span>
+                                </a>
+                            </li>
+
+                            <!-- Liste des articles - Lien direct -->
+                            <li class="nav-item {{ request()->routeIs('dashboard.articles') && !request()->routeIs('dashboard.articles.create') && !request()->routeIs('dashboard.mes-articles') ? 'active' : '' }}">
+                                <a href="{{ route('dashboard.articles') }}" class="nav-link" data-section="list-articles">
+                                    <i class="nav-icon fas fa-list"></i>
+                                    <span class="nav-text">Liste des Articles</span>
+                                </a>
+                            </li>
+
+                            <!-- Mes articles - Seulement pour journalistes -->
                             <li class="nav-item {{ request()->routeIs('dashboard.mes-articles') ? 'active' : '' }}">
                                 <a href="{{ route('dashboard.mes-articles') }}" class="nav-link" data-section="mes-articles">
                                     <i class="nav-icon fas fa-user-edit"></i>
                                     <span class="nav-text">Mes Articles</span>
                                 </a>
+                            </li>
+                        @else
+                            <!-- Interface complète pour admins/directeurs -->
+                            <!-- Gestion des Articles avec sous-menu -->
+                            <li class="nav-item has-submenu {{ request()->routeIs('dashboard.articles') ? 'active' : '' }}">
+                                <a href="#" class="nav-link submenu-toggle">
+                                    <i class="nav-icon fas fa-newspaper"></i>
+                                    <span class="nav-text">Gestion des Articles</span>
+                                    <i class="submenu-arrow fas fa-chevron-down"></i>
+                                </a>
+                                <ul class="nav-submenu">
+                                    <!-- Créer article -->
+                                    <li class="nav-subitem">
+                                        <a href="{{ route('dashboard.articles.create') }}" class="nav-sublink" data-section="add-article">
+                                            <i class="nav-subicon fas fa-plus"></i>
+                                            <span class="nav-subtext">Ajouter un article</span>
+                                        </a>
+                                    </li>
+
+                                    <!-- Liste des articles -->
+                                    <li class="nav-subitem">
+                                        <a href="{{ route('dashboard.articles') }}" class="nav-sublink" data-section="list-articles">
+                                            <i class="nav-subicon fas fa-list"></i>
+                                            <span class="nav-subtext">Liste des articles</span>
+                                        </a>
+                                    </li>
+
+                                    <!-- Catégories -->
+                                    <li class="nav-subitem">
+                                        <a href="{{ route('dashboard.categories.index') }}" class="nav-sublink" data-section="list-categories">
+                                            <i class="nav-subicon fas fa-folder-tree"></i>
+                                            <span class="nav-subtext">Catégories</span>
+                                        </a>
+                                    </li>
+
+                                    <!-- Créer catégorie -->
+                                    <li class="nav-subitem">
+                                        <a href="{{ route('dashboard.categories.create') }}" class="nav-sublink" data-section="add-article-category">
+                                            <i class="nav-subicon fas fa-folder-plus"></i>
+                                            <span class="nav-subtext">Ajouter une catégorie</span>
+                                        </a>
+                                    </li>
+
+                                    <!-- Mes Brouillons -->
+                                    <li class="nav-subitem">
+                                        <a href="{{ route('dashboard.articles') }}?status=draft&author={{ auth()->id() }}" class="nav-sublink" data-section="article-drafts">
+                                            <i class="nav-subicon fas fa-edit"></i>
+                                            <span class="nav-subtext">Mes Brouillons</span>
+                                        </a>
+                                    </li>
+
+                                    <!-- Articles en attente -->
+                                    <li class="nav-subitem">
+                                        <a href="{{ route('dashboard.articles') }}?status=pending" class="nav-sublink" data-section="article-pending">
+                                            <i class="nav-subicon fas fa-hourglass-half"></i>
+                                            <span class="nav-subtext">En attente de validation</span>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
                         @endif
 

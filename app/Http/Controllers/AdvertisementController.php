@@ -212,7 +212,7 @@ class AdvertisementController extends Controller
      */
     public function click($id)
     {
-        \Log::info('Advertisement click tracking', [
+        \Log::info('Suivi des clics publicitaires', [
             'ad_id' => $id,
             'timestamp' => now(),
             'ip' => request()->ip(),
@@ -221,7 +221,7 @@ class AdvertisementController extends Controller
         
         $advertisement = Advertisement::findOrFail($id);
         
-        \Log::info('Advertisement found', [
+        \Log::info('Publicité trouvée', [
             'title' => $advertisement->title,
             'url' => $advertisement->url,
             'status' => $advertisement->status,
@@ -233,21 +233,21 @@ class AdvertisementController extends Controller
         if ($advertisement->isCurrentlyActive()) {
             $advertisement->incrementClickCount();
             
-            \Log::info('Advertisement click count incremented', [
+            \Log::info('Nombre de clics publicitaires incrémenté', [
                 'new_count' => $advertisement->fresh()->click_count
             ]);
             
             // Vérifier si l'URL est valide
             if (filter_var($advertisement->url, FILTER_VALIDATE_URL)) {
-                \Log::info('Redirecting to advertisement URL', ['url' => $advertisement->url]);
+                \Log::info('Redirection vers l\'URL publicitaire', ['url' => $advertisement->url]);
                 return redirect($advertisement->url);
             } else {
-                \Log::error('Invalid advertisement URL', ['url' => $advertisement->url]);
+                \Log::error('URL publicitaire invalide', ['url' => $advertisement->url]);
                 return redirect('/')->with('error', 'URL de destination invalide.');
             }
         }
         
-        \Log::warning('Advertisement not active', [
+        \Log::warning('Publicité non active', [
             'status' => $advertisement->status,
             'is_currently_active' => $advertisement->isCurrentlyActive()
         ]);

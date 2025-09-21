@@ -833,7 +833,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.valide) {
                 showPreview(code);
             } else {
-                alert('Code embed invalide: ' + (data.message || 'Format non reconnu'));
+                alert('Code d\'intégration invalide: ' + (data.message || 'Format non reconnu'));
             }
         })
         .catch(error => {
@@ -842,7 +842,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (code.includes('vimeo.com')) {
                 showPreview(code);
             } else {
-                alert('Code embed invalide - doit contenir une URL Vimeo');
+                alert('Code d\'intégration invalide - doit contenir une URL Vimeo');
             }
         });
     }
