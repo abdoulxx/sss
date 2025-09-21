@@ -376,6 +376,25 @@
                         </li>
                         @endif
 
+                        <!-- Gestion des Journalistes - Seulement Admin et Directeur -->
+                        @if(auth()->check() && (auth()->user()->estAdmin() || auth()->user()->estDirecteurPublication()))
+                            <li class="nav-item has-submenu {{ request()->routeIs('dashboard.journalists.*') ? 'active' : '' }}">
+                                <a href="#" class="nav-link submenu-toggle">
+                                    <i class="nav-icon fas fa-chart-line"></i>
+                                    <span class="nav-text">Gestion des Journalistes</span>
+                                    <i class="submenu-arrow fas fa-chevron-down"></i>
+                                </a>
+                            <ul class="nav-submenu">
+                                <li class="nav-subitem">
+                                    <a href="{{ route('dashboard.journalists.index') }}" class="nav-sublink" data-section="list-journalists">
+                                        <i class="nav-subicon fas fa-users"></i>
+                                        <span class="nav-subtext">Performance des journalistes</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        @endif
+
                         <!-- Gestion des Utilisateurs - Seulement Admin et Directeur -->
                         @if(auth()->check() && (auth()->user()->estAdmin() || auth()->user()->estDirecteurPublication()))
                             <li class="nav-item has-submenu {{ request()->routeIs('dashboard.users') ? 'active' : '' }}">

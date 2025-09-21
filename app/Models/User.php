@@ -118,13 +118,46 @@ class User extends Authenticatable
         if ($this->estAdmin() || $this->estDirecteurPublication()) {
             return true;
         }
-        
+
         // Journalistes peuvent modifier seulement leurs propres articles
         if ($this->estJournaliste()) {
             return $article->user_id === $this->id;
         }
-        
+
         return false;
+    }
+
+    /**
+     * Relation : Articles écrits par cet utilisateur
+     */
+    public function articles()
+    {
+        return $this->hasMany(\App\Models\Article::class);
+    }
+
+    /**
+     * Articles publiés par cet utilisateur
+     */
+    public function publishedArticles()
+    {
+        return $this->articles()->where('status', 'published');
+    }
+
+    /**
+     * Statistiques de performance de l'utilisateur
+     */
+    public function getPerformanceStats($days = 30)
+    {
+        $startDate = \Carbon\Carbon::now()->subDays($days);
+
+        return [
+            'total_articles' => $this->publishedArticles()->count(),
+            'total_views' => $this->publishedArticles()->sum('view_count'),
+            'recent_articles' => $this->publishedArticles()->where('created_at', '>=', $startDate)->count(),
+            'recent_views' => $this->publishedArticles()->where('created_at', '>=', $startDate)->sum('view_count'),
+            'avg_views' => $this->publishedArticles()->avg('view_count') ?: 0,
+            'best_article' => $this->publishedArticles()->orderByDesc('view_count')->first()
+        ];
     }
 
     /**

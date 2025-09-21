@@ -466,6 +466,13 @@ Route::middleware(['auth', 'verifier.role'])->group(function () {
         Route::post('/{webtv}/toggle-actif', [App\Http\Controllers\WebtvController::class, 'toggleActif'])->name('toggle-actif');
         Route::post('/{webtv}/changer-statut', [App\Http\Controllers\WebtvController::class, 'changerStatut'])->name('changer-statut');
     });
+
+    // Routes pour la gestion des journalistes
+    Route::prefix('dashboard/journalists')->name('dashboard.journalists.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Dashboard\JournalistController::class, 'index'])->name('index');
+        Route::get('/{user}', [App\Http\Controllers\Dashboard\JournalistController::class, 'show'])->name('show');
+        Route::get('/export', [App\Http\Controllers\Dashboard\JournalistController::class, 'export'])->name('export');
+    });
 });
 
 });
